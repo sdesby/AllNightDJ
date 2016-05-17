@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+      <h1>All night DJ </h1>
+      <div id="user">
+        <p>
+          <h2>Hello {{ user.name }}</h2>
+        </p>
+        <p>
+          <ul>
+            <li><a href= {{ user.link }}>Your profile on Deezer's site</a></li>
+            <li><a href= {{ user.tracklist }}>Your tracklist on Deezer's site</a></li>
+          </ul>
+        </p>
+      </div>
+{% endblock %}
