@@ -30,7 +30,7 @@ class DeezerEngine:
             LOGGER.error("URLError with remote server :" , e)
 
     def getUser(self, code):
-        LOGGER.info("Entering getAccessToken")
+        LOGGER.info("Entering getUser")
         CODE_FOR_TOKEN = "code=" + code
         url_to_get_token = self.TOKEN_URL + "?" + self.APP_ID + "&" + self.APP_SECRET + "&" + CODE_FOR_TOKEN + "&output=json"
         LOGGER.debug("Requesting url: " + url_to_get_token)
@@ -39,9 +39,11 @@ class DeezerEngine:
         parsed_json = json.load(response)
         access_token = parsed_json["access_token"]
 
+        LOGGER.info("Leaving getUser")
         return self.getUserWithToken(access_token)
 
     def getUserWithToken(self, token):
+        LOGGER.info("Entering getUserWithToken")
         url = "http://api.deezer.com/user/me?access_token=" + token
         request = Request(url)
 
@@ -51,17 +53,21 @@ class DeezerEngine:
             parsed_json = json.loads(response.read())
             LOGGER.debug("Response: ")
             LOGGER.debug(parsed_json)
-
-            connection = db.connection()
-            collection = connection['allnightdj'].users
-            user = collection.User()
-            user['name'] = parsed_json["name"]
-            user['email'] = parsed_json['email']
-            user['token'] = token
-            user['tracklist'] = parsed_json['tracklist']
-            user.save()
-
-            return user
+            LOGGER.info("Leaving getUserWithToken")
+            return self.storeUser(parsed_json, token)
 
         except URLError, e:
             print "Error while communicating with remote server :" , e
+
+    def storeUser(self, parsed_json, token):
+        LOGGER.info("Entering storeUser")
+        connection = db.connection()
+        collection = connection['allnightdj'].users
+        user = collection.User()
+        user['name'] = parsed_json["name"]
+        user['email'] = parsed_json['email']
+        user['token'] = token
+        user['tracklist'] = parsed_json['tracklist']
+        user.save()
+        LOGGER.info("Leaving storeUser")
+        return user
