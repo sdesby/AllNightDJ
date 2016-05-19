@@ -5,7 +5,7 @@ from ..model.user import User
 from ..db import database_init as db
 from ..log_configurator import allnightdj_logger as log
 
-LOGGER = log.get_logger("allnightdj")
+LOGGER = log.get_logger("DeezerEngine")
 
 class DeezerEngine:
 
@@ -27,9 +27,9 @@ class DeezerEngine:
             return url
 
         except URLError, e:
-            LOGGER.error("URLError with distant server :" , e)
+            LOGGER.error("URLError with remote server :" , e)
 
-    def getAccessToken(self, code):
+    def getUser(self, code):
         LOGGER.info("Entering getAccessToken")
         CODE_FOR_TOKEN = "code=" + code
         url_to_get_token = self.TOKEN_URL + "?" + self.APP_ID + "&" + self.APP_SECRET + "&" + CODE_FOR_TOKEN + "&output=json"
@@ -39,9 +39,9 @@ class DeezerEngine:
         parsed_json = json.load(response)
         access_token = parsed_json["access_token"]
 
-        return self.getUser(access_token)
+        return self.getUserWithToken(access_token)
 
-    def getUser(self, token):
+    def getUserWithToken(self, token):
         url = "http://api.deezer.com/user/me?access_token=" + token
         request = Request(url)
 
@@ -64,4 +64,4 @@ class DeezerEngine:
             return user
 
         except URLError, e:
-            print "Erreur lors de la communication avec le service distant :" , e
+            print "Error while communicating with remote server :" , e

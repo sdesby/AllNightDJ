@@ -7,37 +7,38 @@ from model.user import User
 from log_configurator import allnightdj_logger as log
 
 LOGGER = log.get_logger("allnightdj")
+MAIN_TITLE="All Night DJ"
 
 @app.route('/')
 def index():
-    return render_template('index.html', title='Super titre de la mort')
+    return render_template('index.html', title=MAIN_TITLE)
 
 @app.route('/login')
 def login():
-    LOGGER.info("Je suis dans la fonction LOGIN")
+    LOGGER.info("Entering Login")
     access_token = request.args.get('access_token')
     deezer = DeezerEngine()
 
     if access_token is None:
-        LOGGER.debug("ACCESS TOKEN IS NONE")
+        LOGGER.debug("Access token is NONE")
         url = deezer.getAuthentification()
         LOGGER.debug("URL from Authentification : " + url)
         print "request endpoint : " + request.endpoint
         if request.endpoint != 'callback':
-            LOGGER.debug("Je redirige vers l'url : " + url)
+            LOGGER.debug("Redirecting to : " + url)
             return redirect(url, code=302)
         else:
-            return render_template('index.html', title='Super titre de la mort')
+            return render_template('index.html', title=MAIN_TITLE)
     else:
         LOGGER.debug("ACCESS TOKEN : " + access_token)
-        return render_template('index.html', title='Super titre de la mort')
+        return render_template('index.html', title=MAIN_TITLE)
 
 @app.route('/callback')
 def deezer_callback():
     LOGGER.info("Entering callback")
     deezer = DeezerEngine()
     code = request.args.get('code')
-    user = deezer.getAccessToken(code)
+    user = deezer.getUser(code)
     tracklist = user['tracklist']
     url_for_tracks = tracklist + "?access_token=" + user['token']
     return render_template('user.html', title='User page', user=user, tracklist=url_for_tracks)
