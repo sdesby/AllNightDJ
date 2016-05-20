@@ -57,12 +57,14 @@ def deezer_callback():
 
 @app.route('/user')
 def user():
-    print "======= Youhou ! User page !"
+
     #TODO retrieve user from token to use in user.html
     return render_template('user.html', title='User page')
 
 @app.route('/logout')
 def logout():
     # TODO : add logout from Deezer API
+    deezer = DeezerEngine()
+    deezer.logout(session['token'])
     session.clear()
     return render_template('index.html', title=MAIN_TITLE)

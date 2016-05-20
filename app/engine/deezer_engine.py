@@ -6,6 +6,7 @@ from ..db import database_init as db
 from ..log_configurator import allnightdj_logger as log
 
 LOGGER = log.get_logger("DeezerEngine")
+DEEZER_LOGOUT_URL='http://www.deezer.com/logout.php'
 
 class DeezerEngine:
 
@@ -71,3 +72,25 @@ class DeezerEngine:
         user.save()
         LOGGER.info("Leaving storeUser")
         return user
+
+    def logout(self, token):
+        ##Call to DEEZER_LOGOUT_URL does not disconnect in the app
+        LOGGER.info("Entering logout")
+        url = DEEZER_LOGOUT_URL
+        request = Request(url)
+        LOGGER.debug("Requested url : " + url)
+        try:
+            response = urlopen(request)
+            print "**** RESPONSE ****"
+            print response.getcode()
+            print response.geturl()
+            LOGGER.info("Opening url from request " + str(request))
+            url = response.geturl()
+            LOGGER.debug("Requested url : " + url)
+            request = Request(url)
+            try:
+                urlopen(request)
+            except URLError, e:
+                print "Error while communicating with remote server :" , e
+        except URLError, e:
+            print "Error while communicating with remote server :" , e
