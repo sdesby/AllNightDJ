@@ -60,6 +60,21 @@ class DeezerEngine:
         except URLError, e:
             print "Error while communicating with remote server :" , e
 
+    def getPlaylistForUser(self, user):
+        url = "http://api.deezer.com/user/me/playlists?access_token=" + user['token']
+        request = Request(url)
+
+        try:
+            LOGGER.debug("Requested url : " + url)
+            response = urlopen(request)
+            parsed_json = json.loads(response.read())
+            LOGGER.debug("Response: " + str(parsed_json))
+            return parsed_json
+
+        except URLError, e:
+            print "Error while communicating with remote server :" , e
+
+
     def storeUser(self, parsed_json, token):
         LOGGER.info("Entering storeUser")
         connection = db.connection()

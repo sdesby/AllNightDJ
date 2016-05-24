@@ -3,6 +3,7 @@ from urllib2 import Request
 from urlparse import urlparse
 from flask import render_template, redirect, request, session
 from engine.deezer_engine import DeezerEngine
+from engine.db_engine import findUser
 from model.user import User
 from log_configurator import allnightdj_logger as log
 
@@ -57,13 +58,27 @@ def deezer_callback():
 
 @app.route('/user')
 def user():
+    user = findUser(session['token'])
+    return render_template('user.html', title='User page', user=user )
 
-    #TODO retrieve user from token to use in user.html
-    return render_template('user.html', title='User page')
+@app.route('/playlists')
+def tracklist():
+    deezer = DeezerEngine()
+    user = findUser(session['token'])
+    parsed_json = deezer.getPlaylistForUser(user)
+    playlist = parsed_json['data']
+    playlist_title= []
+    for t in playlist:
+        playlist_title.append(t['title'])
+
+    print "** Here's your list of playlists"
+    print playlist_title
+    return render_template('user.html', title=MAIN_TITLE, user=user, playlist=playlist_title)
 
 @app.route('/logout')
 def logout():
     # TODO : add logout from Deezer API
+    # TODO : remove user from Database
     deezer = DeezerEngine()
     deezer.logout(session['token'])
     session.clear()
