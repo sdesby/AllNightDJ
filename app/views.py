@@ -65,14 +65,11 @@ def user():
 def tracklist():
     deezer = DeezerEngine()
     user = findUser(session['token'])
-    parsed_json = deezer.getPlaylistForUser(user)
-    playlist = parsed_json['data']
+    playlists = deezer.getPlaylistsForUser(user)
     playlist_title= []
-    for t in playlist:
+    for t in playlists:
         playlist_title.append(t['title'])
 
-    print "** Here's your list of playlists"
-    print playlist_title
     return render_template('user.html', title=MAIN_TITLE, user=user, playlist=playlist_title)
 
 @app.route('/logout')

@@ -1,5 +1,5 @@
 from flask import Flask
-from mongokit import Connection, Document
+from mongokit import Connection
 
 # configuration
 MONGODB_HOST = 'localhost'

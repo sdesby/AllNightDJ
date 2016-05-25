@@ -28,6 +28,6 @@ class User(Document):
     def __repr__(self):
         return "<User %r>" % (self.name)
 
-LOGGER.debug("Connection to User database")
+LOGGER.debug("Connection to User in database")
 c = db.connection()
 c.register([User])
