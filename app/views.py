@@ -62,7 +62,7 @@ def user():
     return render_template('user.html', title='User page', user=user )
 
 @app.route('/playlists')
-def tracklist():
+def playlists():
     deezer = DeezerEngine()
     user = findUser(session['token'])
     playlists = deezer.getPlaylistsForUser(user)

@@ -54,6 +54,16 @@ class Playlist(Document):
         collection = connection['allnightdj'].playlists
         return collection.Playlist.find()
 
+
+    def already_has_playlist(self):
+        p = self.findPlaylists()
+        if p.count() > 0:
+            print "***** Already have playlists ?  ---> YES"
+            return True
+        else:
+            print "***** Already have playlists ?  ---> NO"
+            return False
+
 LOGGER.debug("Connection to Playlist in database")
 c = db.connection()
 c.register([Playlist])
