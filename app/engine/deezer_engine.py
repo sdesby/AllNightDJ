@@ -46,20 +46,27 @@ class DeezerEngine:
 
     def getUserWithToken(self, token):
         LOGGER.info("Entering getUserWithToken")
-        url = "http://api.deezer.com/user/me?access_token=" + token
-        request = Request(url)
+        user = User()
+        already_exists = user.find_user_with_token(token)
 
-        try:
-            LOGGER.debug("Requested url : " + url)
-            response = urlopen(request)
-            parsed_json = json.loads(response.read())
-            LOGGER.debug("Response: ")
-            LOGGER.debug(parsed_json)
-            LOGGER.info("Leaving getUserWithToken")
-            return self.storeUser(parsed_json, token)
+        if not already_exists:
+            url = "http://api.deezer.com/user/me?access_token=" + token
+            request = Request(url)
 
-        except URLError, e:
-            print "Error while communicating with remote server :" , e
+            try:
+                LOGGER.debug("Requested url : " + url)
+                response = urlopen(request)
+                parsed_json = json.loads(response.read())
+                LOGGER.debug("Response: ")
+                LOGGER.debug(parsed_json)
+                LOGGER.info("Leaving getUserWithToken")
+                return user.storeUser(parsed_json, token)
+
+            except URLError, e:
+                print "Error while communicating with remote server :" , e
+
+        else:
+            return user.find_user_with_token(token)
 
     def getPlaylistsForUser(self, user):
         playlist = Playlist()
@@ -83,19 +90,29 @@ class DeezerEngine:
         else:
             return playlist.findPlaylists()
 
+    def get_all_tracks_from_playlist(self, pid):
+        url = "http://api.deezer.com/playlist/" + pid + "/tracks"
+        request = Request(url)
 
-    def storeUser(self, parsed_json, token):
-        LOGGER.info("Entering storeUser")
-        connection = db.connection()
-        collection = connection['allnightdj'].users
-        user = collection.User()
-        user['name'] = parsed_json["name"]
-        user['email'] = parsed_json['email']
-        user['token'] = token
-        user['tracklist'] = parsed_json['tracklist']
-        user.save()
-        LOGGER.info("Leaving storeUser")
-        return user
+        try:
+            LOGGER.debug("Requested url : " + url)
+            response = urlopen(request)
+            parsed_json = json.loads(response.read())
+            LOGGER.debug("Response: " + str(parsed_json))
+            tracks_title = []
+
+            for t in parsed_json['data']:
+                print "#### T IN PARSED_JSON #####"
+                print "Type de t : "
+                print type(t)
+                print t
+                print "###########################"
+                tracks_title.append(t)
+
+            return tracks_title
+
+        except URLError, e:
+            print "Error while communicating with remote server :" , e
 
     def logout(self, token):
         ##Call to DEEZER_LOGOUT_URL does not disconnect in the app

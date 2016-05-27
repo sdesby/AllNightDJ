@@ -54,6 +54,15 @@ class Playlist(Document):
         collection = connection['allnightdj'].playlists
         return collection.Playlist.find()
 
+    def find_playlist_with_title(self, title):
+        connection = db.connection()
+        collection = connection['allnightdj'].playlists
+        return collection.find_one({'title': title})
+    
+    def find_playlist_with_id(self, id):
+        connection = db.connection()
+        collection = connection['allnightdj'].playlists
+        return collection.find_one({'id': id})
 
     def already_has_playlist(self):
         p = self.findPlaylists()
@@ -63,6 +72,12 @@ class Playlist(Document):
         else:
             print "***** Already have playlists ?  ---> NO"
             return False
+
+    def remove_playlists(self):
+        LOGGER.info("Entering remove_playlists")
+        connection = db.connection()
+        collection = connection['allnightdj'].playlists
+        collection.remove({})
 
 LOGGER.debug("Connection to Playlist in database")
 c = db.connection()

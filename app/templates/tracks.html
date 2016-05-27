@@ -10,21 +10,15 @@
             <li><a href='/logout'>Logout</a></li>
           </ul>
         </p>
+        <div id=playlist>
+          <h2>{{playlist_title}}</h2>
+        </div>
       </div>
-      {% if playlists %}
-      <div id=playlists>
-        <ul>
-        {% for playlist in playlists %}
-          <li> <a href="/tracklist?pid={{playlist['id']}}">{{playlist['title']}}</a></li>
-        {% endfor%}
-      </ul>
-      </div>
-      {% endif %}
       {% if tracklist %}
       <div id=tracklist>
         <ul>
         {% for t in tracklist %}
-          <li>t</li>
+          <li>{{t['title']}} - {{t['artist']['name']}} - {{t['album']['title']}}</li>
         {% endfor%}
       </ul>
       </div>
