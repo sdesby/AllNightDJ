@@ -13,11 +13,12 @@
       </div>
       {% if playlists %}
       <div id=playlists>
-        <ul>
-        {% for playlist in playlists %}
-          <li> <a href="/tracklist?pid={{playlist['id']}}">{{playlist['title']}}</a></li>
-        {% endfor%}
-      </ul>
+        <form action="/store_playlist">
+          {% for playlist in playlists %}
+            <input type="checkbox" name="playlist" value="{{playlist['id']}}">{{playlist['title']}} <a href="/tracklist?pid={{playlist['id']}}">Voir la liste des titres</a><br>
+          {% endfor %}
+          <input type="submit" value="Play"/>
+        </form>
       </div>
       {% endif %}
       {% if tracklist %}

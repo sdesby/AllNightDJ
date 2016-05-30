@@ -102,11 +102,6 @@ class DeezerEngine:
             tracks_title = []
 
             for t in parsed_json['data']:
-                print "#### T IN PARSED_JSON #####"
-                print "Type de t : "
-                print type(t)
-                print t
-                print "###########################"
                 tracks_title.append(t)
 
             return tracks_title

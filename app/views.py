@@ -10,6 +10,7 @@ from log_configurator import allnightdj_logger as log
 
 LOGGER = log.get_logger("allnightdj")
 MAIN_TITLE="All Night DJ"
+PLAYLITS_TO_PLAY = []
 
 @app.route('/')
 def index():
@@ -78,8 +79,20 @@ def tracklist():
     tracklist = deezer.get_all_tracks_from_playlist(pid)
     playlist = pl.find_playlist_with_id(pid)
 
-    return render_template('tracks.html', title=MAIN_TITLE, user=user, tracklist=tracklist)
-    # return redirect('user')
+    url_for_player = "https://www.deezer.com/plugins/player?format=classic&autoplay=false&playlist=true&width=700&height=350&color=007FEB&layout=dark&size=medium&type=playlist&id=" + pid + "&app_id=175951"
+
+    return render_template('tracks.html', title=MAIN_TITLE, user=user, tracklist=tracklist, url=url_for_player)
+
+@app.route('/store_playlist', methods=['GET'])
+def store_playlist():
+    checklist = request.form.getlist('playlist');
+    print "**** Checklist : "
+    print checklist
+    PLAYLITS_TO_PLAY.append(pid)
+    url_for_player = "https://www.deezer.com/plugins/player?format=classic&autoplay=false&playlist=true&width=700&height=350&color=007FEB&layout=dark&size=medium&type=playlist&id=" + pid + "&app_id=175951"
+
+    return render_template('player.html', title=MAIN_TITLE, url=url_for_player)
+
 
 @app.route('/logout')
 def logout():
