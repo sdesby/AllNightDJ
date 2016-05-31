@@ -6,6 +6,7 @@ from engine.deezer_engine import DeezerEngine
 from engine.db_engine import findUser
 from model.user import User
 from model.playlist import Playlist
+from forms.playlist_form import SimpleForm
 from log_configurator import allnightdj_logger as log
 
 LOGGER = log.get_logger("allnightdj")
@@ -67,27 +68,32 @@ def playlists():
     user = findUser(session['token'])
     playlists = deezer.getPlaylistsForUser(user)
 
-    return render_template('user.html', title=MAIN_TITLE, user=user, playlists=playlists)
+    form = SimpleForm()
+
+    return render_template('user.html', title=MAIN_TITLE, user=user, playlists=playlists, form=form)
 
 @app.route('/tracklist', methods=['GET'])
 def tracklist():
     LOGGER.info("Entering /tracklist")
     pid = request.args.get('pid')
-    deezer = DeezerEngine()
-    pl = Playlist()
     user = findUser(session['token'])
-    tracklist = deezer.get_all_tracks_from_playlist(pid)
-    playlist = pl.find_playlist_with_id(pid)
 
-    url_for_player = "https://www.deezer.com/plugins/player?format=classic&autoplay=false&playlist=true&width=700&height=350&color=007FEB&layout=dark&size=medium&type=playlist&id=" + pid + "&app_id=175951"
+    tracklist = DeezerEngine().get_all_tracks_from_playlist(pid)
+    playlist = Playlist().find_playlist_with_id(pid)
 
-    return render_template('tracks.html', title=MAIN_TITLE, user=user, tracklist=tracklist, url=url_for_player)
+    return render_template('user.html', title=MAIN_TITLE, user=user, playlist_title=playlist['title'], tracklist=tracklist)
 
 @app.route('/store_playlist', methods=['GET'])
 def store_playlist():
-    checklist = request.form.getlist('playlist');
-    print "**** Checklist : "
-    print checklist
+    form = SimpleForm()
+
+    if form.validate_on_submit():
+        print "VALIDATE ON SUBMIT. DATA :"
+        print form.example.data
+    else:
+        print "ERROR ON VALIDATE ON SUBMT"
+        print form.errors
+
     PLAYLITS_TO_PLAY.append(pid)
     url_for_player = "https://www.deezer.com/plugins/player?format=classic&autoplay=false&playlist=true&width=700&height=350&color=007FEB&layout=dark&size=medium&type=playlist&id=" + pid + "&app_id=175951"
 

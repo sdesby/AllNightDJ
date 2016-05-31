@@ -49,7 +49,7 @@ class Playlist(Document):
 
         LOGGER.info("Leaving storePlaylist")
 
-    def findPlaylists(self):
+    def find_playlists(self):
         connection = db.connection()
         collection = connection['allnightdj'].playlists
         return collection.Playlist.find()
@@ -58,14 +58,17 @@ class Playlist(Document):
         connection = db.connection()
         collection = connection['allnightdj'].playlists
         return collection.find_one({'title': title})
-    
-    def find_playlist_with_id(self, id):
-        connection = db.connection()
-        collection = connection['allnightdj'].playlists
-        return collection.find_one({'id': id})
+
+    def find_playlist_with_id(self, playlist_id):
+        playlists = self.find_playlists()
+        pl = Playlist()
+        for p in playlists:
+            if str(p['id']) == str(playlist_id):
+                pl = p
+        return pl
 
     def already_has_playlist(self):
-        p = self.findPlaylists()
+        p = self.find_playlists()
         if p.count() > 0:
             print "***** Already have playlists ?  ---> YES"
             return True

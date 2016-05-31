@@ -83,12 +83,12 @@ class DeezerEngine:
                 LOGGER.debug("Response: " + str(parsed_json))
 
                 playlist.storePlaylists(parsed_json)
-                return playlist.findPlaylists()
+                return playlist.find_playlists()
 
             except URLError, e:
                 print "Error while communicating with remote server :" , e
         else:
-            return playlist.findPlaylists()
+            return playlist.find_playlists()
 
     def get_all_tracks_from_playlist(self, pid):
         url = "http://api.deezer.com/playlist/" + pid + "/tracks"
