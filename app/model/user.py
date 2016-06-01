@@ -28,13 +28,8 @@ class User(Document):
     def __repr__(self):
         return "<User %r>" % (self.name)
 
-    def find_user_with_token(self, token):
-        connection = db.connection()
-        collection = connection['allnightdj'].users
-        return collection.find_one({'token': token})
-
-    def storeUser(self, parsed_json, token):
-        LOGGER.info("Entering storeUser")
+    def store_user(self, parsed_json, token):
+        LOGGER.info("Entering store_user")
         connection = db.connection()
         collection = connection['allnightdj'].users
         user = collection.User()
@@ -43,7 +38,7 @@ class User(Document):
         user['token'] = token
         user['tracklist'] = parsed_json['tracklist']
         user.save()
-        LOGGER.info("Leaving storeUser")
+        LOGGER.info("Leaving store_user")
         return user
 
     def remove_user(self, token):
@@ -51,6 +46,13 @@ class User(Document):
         connection = db.connection()
         collection = connection['allnightdj'].users
         collection.remove({'token': token})
+
+    def find_user(self, token):
+        LOGGER.info("Entering find_user()")
+        connection = db.connection()
+        collection = connection['allnightdj'].users
+        user = collection.User.find_one({'token': token})
+        return user
 
 LOGGER.debug("Connection to User in database")
 c = db.connection()

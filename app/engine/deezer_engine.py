@@ -20,8 +20,8 @@ class DeezerEngine:
         self.permissions = 'perms=basic_access,email'
         self.response_type="response_type=token"
 
-    def getAuthentification(self):
-        LOGGER.info("Entering getAuthentification function")
+    def get_authentification(self):
+        LOGGER.info("Entering get_authentification function")
         url = self.AUTH_URL + "?" + self.APP_ID + "&" + self.redirect_uri + "&" + self.permissions
 
         try:
@@ -31,8 +31,8 @@ class DeezerEngine:
         except URLError, e:
             LOGGER.error("URLError with remote server :" , e)
 
-    def getUser(self, code):
-        LOGGER.info("Entering getUser")
+    def get_user(self, code):
+        LOGGER.info("Entering get_user")
         CODE_FOR_TOKEN = "code=" + code
         url_to_get_token = self.TOKEN_URL + "?" + self.APP_ID + "&" + self.APP_SECRET + "&" + CODE_FOR_TOKEN + "&output=json"
         LOGGER.debug("Requesting url: " + url_to_get_token)
@@ -41,13 +41,13 @@ class DeezerEngine:
         parsed_json = json.load(response)
         access_token = parsed_json["access_token"]
 
-        LOGGER.info("Leaving getUser")
-        return self.getUserWithToken(access_token)
+        LOGGER.info("Leaving get_user")
+        return self.get_user_with_token(access_token)
 
-    def getUserWithToken(self, token):
-        LOGGER.info("Entering getUserWithToken")
+    def get_user_with_token(self, token):
+        LOGGER.info("Entering get_user_with_token")
         user = User()
-        already_exists = user.find_user_with_token(token)
+        already_exists = user.find_user(token)
 
         if not already_exists:
             url = "http://api.deezer.com/user/me?access_token=" + token
@@ -59,8 +59,8 @@ class DeezerEngine:
                 parsed_json = json.loads(response.read())
                 LOGGER.debug("Response: ")
                 LOGGER.debug(parsed_json)
-                LOGGER.info("Leaving getUserWithToken")
-                return user.storeUser(parsed_json, token)
+                LOGGER.info("Leaving get_user_with_token")
+                return user.store_user(parsed_json, token)
 
             except URLError, e:
                 print "Error while communicating with remote server :" , e
@@ -68,7 +68,8 @@ class DeezerEngine:
         else:
             return user.find_user_with_token(token)
 
-    def getPlaylistsForUser(self, user):
+    def get_playlists_for_user(self, user):
+        LOGGER.info("Entering get_playlists_for_user")
         playlist = Playlist()
         alreadyHasPlaylists = playlist.already_has_playlist()
 

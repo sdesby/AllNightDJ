@@ -3,7 +3,6 @@ from urllib2 import Request
 from urlparse import urlparse
 from flask import render_template, redirect, request, session
 from engine.deezer_engine import DeezerEngine
-from engine.db_engine import findUser
 from model.user import User
 from model.playlist import Playlist
 from forms.playlist_form import SimpleForm
@@ -29,7 +28,7 @@ def login():
     deezer = DeezerEngine()
 
     if 'token' not in session:
-        url = deezer.getAuthentification()
+        url = deezer.get_authentification()
         LOGGER.debug("URL from Authentification : " + url)
 
     else:
@@ -50,7 +49,7 @@ def deezer_callback():
     LOGGER.info("Entering callback")
     deezer = DeezerEngine()
     code = request.args.get('code')
-    user = deezer.getUser(code)
+    user = deezer.get_user(code)
     tracklist = user['tracklist']
     url_for_tracks = tracklist + "?access_token=" + user['token']
     session['token'] = user['token']
@@ -60,14 +59,14 @@ def deezer_callback():
 
 @app.route('/user')
 def user():
-    user = findUser(session['token'])
+    user = User().find_user(session['token'])
     return render_template('user.html', title='User page', user=user )
 
 @app.route('/playlists', methods=['GET', 'POST'])
 def playlists():
     deezer = DeezerEngine()
-    user = findUser(session['token'])
-    playlists = deezer.getPlaylistsForUser(user)
+    user = User().find_user(session['token'])
+    playlists = deezer.get_playlists_for_user(user)
 
     list_of_values = []
     for p in playlists:
@@ -89,7 +88,7 @@ def playlists():
 def tracklist():
     LOGGER.info("Entering /tracklist")
     pid = request.args.get('pid')
-    user = findUser(session['token'])
+    user = User.find_user(session['token'])
 
     tracklist = DeezerEngine().get_all_tracks_from_playlist(pid)
     playlist = Playlist().find_playlist_with_id(pid)
