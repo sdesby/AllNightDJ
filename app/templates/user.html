@@ -2,7 +2,7 @@
 {% block content %}
       <h1>All night DJ </h1>
       <div id=user>
-      <h2>Hello {{user['name']}}</h2>
+      <h2>Hello {{session['name']}}</h2>
         <p>
           <ul>
             <li><a href='/'>Retour à la homepage</a></li>
@@ -11,13 +11,14 @@
           </ul>
         </p>
       </div>
-      {% if playlists %}
-      <div id=playlists>
-        <form action="/store_playlist">
-          {% for playlist in playlists %}
-            <input type="checkbox" name="playlist" value="{{playlist['id']}}">{{playlist['title']}} <a href="/tracklist?pid={{playlist['id']}}">Voir la liste des titres</a><br>
-          {% endfor %}
-          <input type="submit" value="Play"/>
+      {% if form %}
+      <div id=form>
+        <form name="playlist_form" action="" method="POST">
+          {{ form.csrf_token  }}
+          {{form.checkboxes}}
+          <p>
+              <input id="submit" value="Select those playlists" type='submit'/>
+          </p>
         </form>
       </div>
       {% endif %}
@@ -29,13 +30,6 @@
           <li>{{t['title']}} - {{t['artist']['name']}} - {{t['album']['title']}} - <a href={{t['preview']}}>Extrait</a></li>
         {% endfor%}
       </ul>
-      </div>
-      {% endif %}
-      {% if form %}
-      <div id=form>
-        <form name="playlist_form" action="" method="POST">
-          {{form.example}}
-        </form>
       </div>
       {% endif %}
 {% endblock %}

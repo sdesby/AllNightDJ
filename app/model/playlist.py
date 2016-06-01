@@ -70,10 +70,10 @@ class Playlist(Document):
     def already_has_playlist(self):
         p = self.find_playlists()
         if p.count() > 0:
-            print "***** Already have playlists ?  ---> YES"
+            LOGGER.info("Playlists have been found")
             return True
         else:
-            print "***** Already have playlists ?  ---> NO"
+            LOGGER.info("No playlists have been found")
             return False
 
     def remove_playlists(self):

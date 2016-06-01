@@ -54,6 +54,7 @@ def deezer_callback():
     tracklist = user['tracklist']
     url_for_tracks = tracklist + "?access_token=" + user['token']
     session['token'] = user['token']
+    session['name'] = user['name']
 
     return redirect('user')
 
@@ -62,15 +63,27 @@ def user():
     user = findUser(session['token'])
     return render_template('user.html', title='User page', user=user )
 
-@app.route('/playlists')
+@app.route('/playlists', methods=['GET', 'POST'])
 def playlists():
     deezer = DeezerEngine()
     user = findUser(session['token'])
     playlists = deezer.getPlaylistsForUser(user)
 
-    form = SimpleForm()
+    list_of_values = []
+    for p in playlists:
+        list_of_values.append((p['id'], p['title']))
 
-    return render_template('user.html', title=MAIN_TITLE, user=user, playlists=playlists, form=form)
+    form = SimpleForm()
+    form.checkboxes.choices = list_of_values
+
+    if form.checkboxes.data and form.validate_on_submit():
+        print "VALIDATE ON SUBMIT. DATA :"
+        print form.checkboxes.data
+    else:
+        print "ERROR ON VALIDATE ON SUBMT"
+        print form.errors
+
+    return render_template('user.html', title=MAIN_TITLE, form=form)
 
 @app.route('/tracklist', methods=['GET'])
 def tracklist():
@@ -85,11 +98,12 @@ def tracklist():
 
 @app.route('/store_playlist', methods=['GET'])
 def store_playlist():
+
     form = SimpleForm()
 
     if form.validate_on_submit():
         print "VALIDATE ON SUBMIT. DATA :"
-        print form.example.data
+        print form.checkboxes.data
     else:
         print "ERROR ON VALIDATE ON SUBMT"
         print form.errors

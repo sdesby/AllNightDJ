@@ -7,8 +7,4 @@ class MultiCheckboxField(SelectMultipleField):
     option_widget = widgets.CheckboxInput()
 
 class SimpleForm(Form):
-    string_of_files = ['one\r\ntwo\r\nthree\r\n']
-    list_of_files = string_of_files[0].split()
-    # create a list of value/description tuples
-    files = [(x, x) for x in list_of_files]
-    example = MultiCheckboxField('Label', choices=files)
+        checkboxes = MultiCheckboxField('Playlists', coerce=int)
