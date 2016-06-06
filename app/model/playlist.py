@@ -65,7 +65,16 @@ class Playlist(Document):
         for p in playlists:
             if str(p['id']) == str(playlist_id):
                 pl = p
+                LOGGER.info("find_playlist_with_id::Found playlist : " + pl['title'])
         return pl
+
+    def find_playlists_by_ids(self, ids):
+        playlists = []
+        for i in ids:
+            p = self.find_playlist_with_id(i)
+            playlists.append(p)
+        LOGGER.info("find_playlists_by_ids::Found playlist : " + p['title'])
+        return playlists
 
     def already_has_playlist(self):
         p = self.find_playlists()

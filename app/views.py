@@ -76,10 +76,11 @@ def playlists():
     form.checkboxes.choices = list_of_values
 
     if form.checkboxes.data and form.validate_on_submit():
-        print "VALIDATE ON SUBMIT. DATA :"
-        print form.checkboxes.data
         PLAYLITS_TO_PLAY=form.checkboxes.data
-        return render_template("player.html", playlists=PLAYLITS_TO_PLAY)
+        p = Playlist()
+        playlists = p.find_playlists_by_ids(PLAYLITS_TO_PLAY)
+        LOGGER.info("Duree de la premiere piste : " + str(playlists[0]['duration']))
+        return render_template("player.html", playlists=playlists)
     else:
         print "ERROR ON VALIDATE ON SUBMT"
         print form.errors

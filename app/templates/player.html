@@ -4,11 +4,56 @@
       {%if playlists%}
 
       <script>
-      window.onload = function () {
+      function getTimeRemaining(endtime){
+        console.log("getTimeRemaining::Entering function")
+      var t = endtime - Date.parse(new Date());
+        console.log("getTimeRemaining::t=" + parseInt(t));
+      var seconds = Math.floor( (t/1000) % 60 );
+      console.log("getTimeRemaining::seconds=" + parseInt(seconds));
+      var minutes = Math.floor( (t/1000/60) % 60 );
+      console.log("getTimeRemaining::minutes=" + parseInt(minutes));
+      return {
+        'total': t,
+        'minutes': minutes,
+        'seconds': seconds
+        };
+      }
 
-      var url="https://www.deezer.com/plugins/player?format=classic&autoplay=false&playlist=true&width=700&height=350&color=007FEB&layout=dark&size=medium&type=playlist&app_id=175951&id=" + {{playlists[0]}};
+      function initializeClock(id, endtime){
+        console.log('initializeClock::endtime=' + parseInt(endtime));
+      var clock = document.getElementById(id);
+      var timeinterval = setInterval(function(){
+      console.log("Hellooo ! I'm here !");
+      var t = getTimeRemaining(endtime);
+      console.log("initializeClock::endTime=" + parseInt(t.minutes));
+      clock.innerHTML = 'days: ' + t.days + '<br>' +
+                        'hours: '+ t.hours + '<br>' +
+                        'minutes: ' + t.minutes + '<br>' +
+                        'seconds: ' + t.seconds;
+        if(t.total<=0){
+          clearInterval(timeinterval);
+        }
+      },1000);
+    }
+
+
+      window.onload = function () {
+      document.write('<div id="clockdiv"></div>');
+      var durationAsString = {{playlists[0]['duration']}};
+      console.log("Given duration in milliseconds : "  + parseInt(durationAsString))
+      var endTime = Date.parse(new Date()) + parseInt(durationAsString);
+
+      initializeClock('clockdiv', endTime);
+
+      var url="https://www.deezer.com/plugins/player"
+      + "?format=classic&autoplay=false"
+      + "&playlist=true&width=700&height=350"
+      + "&color=007FEB&layout=dark&size=medium"
+      + "&type=playlist&app_id=175951&id="
+      + {{playlists[0]['id']}};
+
       console.log("Url = " + url);
-      var iframe = '<iframe scrolling=\"no\" '
+      var iframe =  '<iframe scrolling=\"no\" '
                       +'frameborder=\"0\" '
                       +'allowTransparency="true" '
                       + 'src=' + url
