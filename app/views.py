@@ -78,6 +78,8 @@ def playlists():
     if form.checkboxes.data and form.validate_on_submit():
         print "VALIDATE ON SUBMIT. DATA :"
         print form.checkboxes.data
+        PLAYLITS_TO_PLAY=form.checkboxes.data
+        return render_template("player.html", playlists=PLAYLITS_TO_PLAY)
     else:
         print "ERROR ON VALIDATE ON SUBMT"
         print form.errors

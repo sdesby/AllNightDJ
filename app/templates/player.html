@@ -1,11 +1,25 @@
 {% extends "base.html" %}
 {% block content %}
       <h1>All night DJ </h1>
-      <iframe scrolling="no"
-      frameborder="0"
-      allowTransparency="true"
-      src="{{url}}"
-      width="700"
-      height="350">
-      </iframe>
+      {%if playlists%}
+
+      <script>
+      window.onload = function () {
+
+      var url="https://www.deezer.com/plugins/player?format=classic&autoplay=false&playlist=true&width=700&height=350&color=007FEB&layout=dark&size=medium&type=playlist&app_id=175951&id=" + {{playlists[0]}};
+      console.log("Url = " + url);
+      var iframe = '<iframe scrolling=\"no\" '
+                      +'frameborder=\"0\" '
+                      +'allowTransparency="true" '
+                      + 'src=' + url
+                      + ' width=\"700\" '
+                      + 'height=\"350\">'
+                      +'</iframe>\n'
+                      +'<input type=\"button\" onclick=\"location.href = \'/user\'\" value=\"Retour\"/>';
+      console.log("Iframe = " + iframe);
+      document.write(iframe);
+}
+      </script>
+
+      {%endif%}
 {% endblock %}
