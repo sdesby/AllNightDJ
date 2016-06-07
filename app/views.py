@@ -10,7 +10,7 @@ from log_configurator import allnightdj_logger as log
 
 LOGGER = log.get_logger("allnightdj")
 MAIN_TITLE="All Night DJ"
-PLAYLITS_TO_PLAY = []
+PLAYLIST_TO_PLAY = []
 
 @app.route('/')
 def index():
@@ -76,11 +76,15 @@ def playlists():
     form.checkboxes.choices = list_of_values
 
     if form.checkboxes.data and form.validate_on_submit():
-        PLAYLITS_TO_PLAY=form.checkboxes.data
+        PLAYLIST_TO_PLAY=form.checkboxes.data
         p = Playlist()
-        playlists = p.find_playlists_by_ids(PLAYLITS_TO_PLAY)
-        LOGGER.info("Duree de la premiere piste : " + str(playlists[0]['duration']))
-        return render_template("player.html", playlists=playlists)
+        playlists = p.find_playlists_by_ids(PLAYLIST_TO_PLAY)
+        playlists_for_json = []
+        for p in playlists:
+            playlists_for_json.append(p['id'])
+            playlists_for_json.append(p['duration'])
+        LOGGER.info("Duree de la premiere piste : " + str(playlists[0]['duration'])+ " secondes")
+        return render_template("player.html", playlists=playlists_for_json, size=len(playlists))
     else:
         print "ERROR ON VALIDATE ON SUBMT"
         print form.errors
@@ -110,7 +114,7 @@ def store_playlist():
         print "ERROR ON VALIDATE ON SUBMT"
         print form.errors
 
-    PLAYLITS_TO_PLAY.append(pid)
+    PLAYLIST_TO_PLAY.append(pid)
     url_for_player = "https://www.deezer.com/plugins/player?format=classic&autoplay=false&playlist=true&width=700&height=350&color=007FEB&layout=dark&size=medium&type=playlist&id=" + pid + "&app_id=175951"
 
     return render_template('player.html', title=MAIN_TITLE, url=url_for_player)
