@@ -4,9 +4,13 @@
       {%if playlists%}
 
       <script>
-      function getTimeRemaining(endtime){
+      function getTimeRemaining(endtime, actualDate){
         console.log("getTimeRemaining::Entering function")
-      var t = endtime - Date.parse(new Date());
+        var date = Date.parse(new Date());
+        console.log("DATE : " + actualDate);
+        console.log("Endtime : " + endtime);
+      var t = endtime - actualDate;
+      console.log("T : " + t);
         console.log("getTimeRemaining::t=" + parseInt(t));
       var seconds = Math.floor( (t/1000) % 60 );
       console.log("getTimeRemaining::seconds=" + parseInt(seconds));
@@ -21,17 +25,19 @@
 
       function initializeClock(id, endtime) {
         var playlistToPlay = 0;
-        console.log('initializeClock::endtime=' + parseInt(endtime));
+        console.log('initializeClock::endtime=' + endtime);
       var clock = document.getElementById(id);
       var timeinterval = setInterval(function(){
-      var t = getTimeRemaining(endtime);
-      console.log("initializeClock::endTime=" + parseInt(t.minutes));
+      var t = getTimeRemaining(endtime, Date.parse(new Date()));
       clock.innerHTML = 'days: ' + t.days + '<br>' +
                         'hours: '+ t.hours + '<br>' +
                         'minutes: ' + t.minutes + '<br>' +
                         'seconds: ' + t.seconds;
         if(t.total<=0){
-          changePlaylist(playlistToPlay++);
+          console.log("TEMPS ECOULE !!!")
+          clearInterval(timeinterval);
+          playlistToPlay += 2;
+          changePlaylist(playlistToPlay);
         }
       },1000);
     }
@@ -39,42 +45,45 @@
     function changePlaylist(playlistToPlay) {
       console.log("****++++++------+++++****")
       var size = {{size}};
-      console.log("Size : " + parseInt(size));
       var pl = {{playlists|tojson}};
-      console.log("Valeur de pl : " + pl)
 
       var duration = pl[playlistToPlay+1] * 1000;
 
       console.log("ChangePlaylist::Given duration in milliseconds : "  + duration);
-      var endTime = Date.parse(new Date()) + parseInt(duration);
+      var endtime = Date.parse(new Date()) + parseInt(duration);
+      console.log("ChangePlaylist::Given endtime : " + endtime);
 
-      initializeClock('clockdiv', endTime);
+      initializeClock('clockdiv', endtime);
 
-      var url="https://www.deezer.com/plugins/player"
-      + "?format=classic&autoplay=true"
-      + "&playlist=true&width=700&height=350"
-      + "&color=007FEB&layout=dark&size=medium"
-      + "&type=playlist&app_id=175951&id="
-      + pl[playlistToPlay];
+      if(document.getElementById("player") !== null)
+      {
+        element = document.getElementById("player");
+        element.parentNode.removeChild(element);
+      }
+        var url="https://www.deezer.com/plugins/player"
+        + "?format=classic&autoplay=true"
+        + "&playlist=true&width=700&height=350"
+        + "&color=007FEB&layout=dark&size=medium"
+        + "&type=playlist&app_id=175951&id="
+        + pl[playlistToPlay];
 
-      console.log("Url = " + url);
-      var iframe =  '<iframe scrolling=\"no\" '
-                      +'frameborder=\"0\" '
-                      +'allowTransparency="true" '
-                      + 'src=' + url
-                      + ' width=\"700\" '
-                      + 'height=\"350\">'
-                      +'</iframe>\n'
-                      +'<input type=\"button\" onclick=\"location.href = \'/user\'\" value=\"Retour\"/>';
-      console.log("Iframe = " + iframe);
-      document.write(iframe);
+        var iframe =  '<iframe id =\"player\" scrolling=\"no\" '
+                        +'frameborder=\"0\" '
+                        +'allowTransparency="true" '
+                        + 'src=' + url
+                        + ' width=\"700\" '
+                        + 'height=\"350\">'
+                        +'</iframe>\n';
 
-    }
 
+        document.write(iframe);
+
+      }
 
     function main() {
       document.write('<div id="clockdiv"></div>');
       changePlaylist(0);
+      document.write('<input type=\"button\" onclick=\"location.href = \'/user\'\" value=\"Retour\"/>');
     }
 
       window.onload = main();
