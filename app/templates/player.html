@@ -23,21 +23,23 @@
         };
       }
 
-      function initializeClock(id, endtime) {
-        var playlistToPlay = 0;
+      function initializeClock(id, endtime, playlistToPlay) {
         console.log('initializeClock::endtime=' + endtime);
+        console.log('initializeClock::playlistToPlay=' + playlistToPlay);
       var clock = document.getElementById(id);
-      var timeinterval = setInterval(function(){
-      var t = getTimeRemaining(endtime, Date.parse(new Date()));
-      clock.innerHTML = 'days: ' + t.days + '<br>' +
+
+      var timeinterval = setInterval(
+        function(){
+          var t = getTimeRemaining(endtime, Date.parse(new Date()));
+          clock.innerHTML = 'days: ' + t.days + '<br>' +
                         'hours: '+ t.hours + '<br>' +
                         'minutes: ' + t.minutes + '<br>' +
                         'seconds: ' + t.seconds;
-        if(t.total<=0){
-          console.log("TEMPS ECOULE !!!")
-          clearInterval(timeinterval);
-          playlistToPlay += 2;
-          changePlaylist(playlistToPlay);
+                        if(t.total<=0){
+                          console.log("TEMPS ECOULE !!!")
+                          clearInterval(timeinterval);
+                          playlistToPlay += 2;
+                          changePlaylist(playlistToPlay);
         }
       },1000);
     }
@@ -47,13 +49,13 @@
       var size = {{size}};
       var pl = {{playlists|tojson}};
 
-      var duration = pl[playlistToPlay+1] * 1000;
+      var duration = (pl[playlistToPlay+1] + 5) * 1000;
 
       console.log("ChangePlaylist::Given duration in milliseconds : "  + duration);
       var endtime = Date.parse(new Date()) + parseInt(duration);
       console.log("ChangePlaylist::Given endtime : " + endtime);
 
-      initializeClock('clockdiv', endtime);
+      initializeClock('clockdiv', endtime, playlistToPlay);
 
       if(document.getElementById("player") !== null)
       {
