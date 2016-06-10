@@ -1,94 +1,82 @@
 {% extends "base.html" %}
 {% block content %}
-      <h1>All night DJ </h1>
       {%if playlists%}
 
       <script>
-      function getTimeRemaining(endtime, actualDate){
-        console.log("getTimeRemaining::Entering function")
-        var date = Date.parse(new Date());
-        console.log("DATE : " + actualDate);
-        console.log("Endtime : " + endtime);
-      var t = endtime - actualDate;
-      console.log("T : " + t);
-        console.log("getTimeRemaining::t=" + parseInt(t));
-      var seconds = Math.floor( (t/1000) % 60 );
-      console.log("getTimeRemaining::seconds=" + parseInt(seconds));
-      var minutes = Math.floor( (t/1000/60) % 60 );
-      console.log("getTimeRemaining::minutes=" + parseInt(minutes));
-      return {
-        'total': t,
-        'minutes': minutes,
-        'seconds': seconds
-        };
-      }
+        function getTimeRemaining(endtime, actualDate){
+          var date = Date.parse(new Date());
+          var t = endtime - actualDate;
 
-      function initializeClock(id, endtime, playlistToPlay) {
-        console.log('initializeClock::endtime=' + endtime);
-        console.log('initializeClock::playlistToPlay=' + playlistToPlay);
-      var clock = document.getElementById(id);
-
-      var timeinterval = setInterval(
-        function(){
-          var t = getTimeRemaining(endtime, Date.parse(new Date()));
-          clock.innerHTML = 'days: ' + t.days + '<br>' +
-                        'hours: '+ t.hours + '<br>' +
-                        'minutes: ' + t.minutes + '<br>' +
-                        'seconds: ' + t.seconds;
-                        if(t.total<=0){
-                          console.log("TEMPS ECOULE !!!")
-                          clearInterval(timeinterval);
-                          playlistToPlay += 2;
-                          changePlaylist(playlistToPlay);
+          console.log("getTimeRemaining::t=" + parseInt(t));
+          var seconds = Math.floor( (t/1000) % 60 );
+          console.log("getTimeRemaining::seconds=" + parseInt(seconds));
+          var minutes = Math.floor( (t/1000/60) % 60 );
+          console.log("getTimeRemaining::minutes=" + parseInt(minutes));
+          return {
+            'total': t,
+            'minutes': minutes,
+            'seconds': seconds
+          };
         }
-      },1000);
-    }
 
-    function changePlaylist(playlistToPlay) {
-      console.log("****++++++------+++++****")
-      var size = {{size}};
-      var pl = {{playlists|tojson}};
+        function initializeClock(id, endtime, playlistToPlay) {
+          var clock = document.getElementById(id);
 
-      var duration = (pl[playlistToPlay+1] + 5) * 1000;
+          var timeinterval = setInterval(
+          function() {
+            var t = getTimeRemaining(endtime, Date.parse(new Date()));
 
-      console.log("ChangePlaylist::Given duration in milliseconds : "  + duration);
-      var endtime = Date.parse(new Date()) + parseInt(duration);
-      console.log("ChangePlaylist::Given endtime : " + endtime);
+                          if(t.total<=0){
+                            clearInterval(timeinterval);
+                            playlistToPlay += 2;
+                            changePlaylist(playlistToPlay);
+                          }
+                        },1000);
+        }
 
-      initializeClock('clockdiv', endtime, playlistToPlay);
+        function changePlaylist(playlistToPlay) {
+          document.write('<h1>All night DJ </h1>');
+          var size = {{size}};
+          var pl = {{playlists|tojson}};
 
-      if(document.getElementById("player") !== null)
-      {
-        element = document.getElementById("player");
-        element.parentNode.removeChild(element);
-      }
-        var url="https://www.deezer.com/plugins/player"
-        + "?format=classic&autoplay=true"
-        + "&playlist=true&width=700&height=350"
-        + "&color=007FEB&layout=dark&size=medium"
-        + "&type=playlist&app_id=175951&id="
-        + pl[playlistToPlay];
+          var duration = (pl[playlistToPlay+1]) * 1000;
 
-        var iframe =  '<iframe id =\"player\" scrolling=\"no\" '
-                        +'frameborder=\"0\" '
-                        +'allowTransparency="true" '
-                        + 'src=' + url
-                        + ' width=\"700\" '
-                        + 'height=\"350\">'
-                        +'</iframe>\n';
+          console.log("ChangePlaylist::Given duration in milliseconds : "  + duration);
+          var endtime = Date.parse(new Date()) + parseInt(duration);
+          console.log("ChangePlaylist::Given endtime : " + endtime);
 
+          initializeClock('clockdiv', endtime, playlistToPlay);
 
-        document.write(iframe);
+          if(document.getElementById("player") !== null)
+          {
+            element = document.getElementById("player");
+            element.parentNode.removeChild(element);
+          }
 
-      }
+          var url="https://www.deezer.com/plugins/player"
+          + "?format=classic&autoplay=true"
+          + "&playlist=true&width=700&height=350"
+          + "&color=007FEB&layout=dark&size=medium"
+          + "&type=playlist&app_id=175951&id="
+          + pl[playlistToPlay];
 
-    function main() {
-      document.write('<div id="clockdiv"></div>');
-      changePlaylist(0);
-      document.write('<input type=\"button\" onclick=\"location.href = \'/user\'\" value=\"Retour\"/>');
-    }
+          var iframe =  '<iframe id =\"player\" scrolling=\"no\" '
+                          +'frameborder=\"0\" '
+                          +'allowTransparency="true" '
+                          + 'src=' + url
+                          + ' width=\"700\" '
+                          + 'height=\"350\">'
+                          +'</iframe>\n';
 
-      window.onload = main();
+          document.write(iframe);
+          document.write('<input type=\"button\" onclick=\"location.href = \'/user\'\" value=\"Retour\"/>');
+        }
+
+        function main() {
+          changePlaylist(0);
+        }
+
+        window.onload = main();
       </script>
 
       {%endif%}
