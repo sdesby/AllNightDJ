@@ -17,7 +17,7 @@ class DeezerEngine:
         self.AUTH_URL = 'https://connect.deezer.com/oauth/auth.php'
         self.TOKEN_URL = 'https://connect.deezer.com/oauth/access_token.php'
         self.redirect_uri='redirect_uri=http://127.0.0.1:5000/callback'
-        self.permissions = 'perms=basic_access,email'
+        self.permissions = 'perms=basic_access,email, manage_library'
         self.response_type="response_type=token"
 
     def get_authentification(self):
@@ -90,6 +90,23 @@ class DeezerEngine:
                 print "Error while communicating with remote server :" , e
         else:
             return playlist.find_playlists()
+
+    def create_playlist(self, user, playlist_name):
+        #Fonctionne sous PostMan mais pas ici :(
+        url = "https://api.deezer.com/user/" + str(user['id']) + "/playlists"
+        data = {'title' : playlist_name, 'access_token' : user['token']}
+        json_data = json.dumps(data)
+        request = Request(url, data=json_data)
+
+        try:
+            LOGGER.debug("Requested url : " + request.data)
+            response = urlopen(request)
+            parsed_json = json.loads(response.read())
+            LOGGER.debug("Response: " + str(parsed_json))
+
+        except URLError, e:
+            print "Error while communicating with remote server :" , e
+
 
     def get_all_tracks_from_playlist(self, pid):
         url = "http://api.deezer.com/playlist/" + pid + "/tracks"

@@ -13,6 +13,7 @@ def max_length(length):
 
 class User(Document):
     structure = {
+    'id': int,
     'name':unicode,
     'email': unicode,
     'token': unicode,
@@ -23,7 +24,7 @@ class User(Document):
     'email': max_length(120),
     'token': max_length(120)
     }
-    required_fields = ['name', 'email', 'token', 'tracklist']
+    required_fields = ['id', 'name', 'email', 'token', 'tracklist']
 
     def __repr__(self):
         return "<User %r>" % (self.name)
@@ -33,7 +34,8 @@ class User(Document):
         connection = db.connection()
         collection = connection['allnightdj'].users
         user = collection.User()
-        user['name'] = parsed_json["name"]
+        user['id'] = parsed_json['id']
+        user['name'] = parsed_json['name']
         user['email'] = parsed_json['email']
         user['token'] = token
         user['tracklist'] = parsed_json['tracklist']

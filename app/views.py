@@ -6,8 +6,10 @@ from engine.deezer_engine import DeezerEngine
 from model.user import User
 from model.playlist import Playlist
 from forms.playlist_form import SimpleForm
+from forms.new_playlist_form import NewPlaylistForm
 from log_configurator import allnightdj_logger as log
 
+#TODO : store user in session in order to replace all user = User().find_user(session['token']) declarations
 LOGGER = log.get_logger("allnightdj")
 MAIN_TITLE="All Night DJ"
 PLAYLIST_TO_PLAY = []
@@ -62,6 +64,23 @@ def user():
     user = User().find_user(session['token'])
     return render_template('user.html', title='User page', user=user )
 
+@app.route('/new-playlist', methods=['GET', 'POST'])
+def new_playlist():
+    user = User().find_user(session['token'])
+    form = NewPlaylistForm()
+
+    if form.validate_on_submit():
+        playlist_name = form.new_playlist_name.data
+        deezer = DeezerEngine()
+        deezer.create_playlist(user, playlist_name)
+
+    else:
+        print "Oh No..."
+
+    user = User().find_user(session['token'])
+    return render_template('new-playlist.html', title='Create a new playlist', user=user, form=form )
+
+
 @app.route('/playlists', methods=['GET', 'POST'])
 def playlists():
     deezer = DeezerEngine()
@@ -101,23 +120,6 @@ def tracklist():
     playlist = Playlist().find_playlist_with_id(pid)
 
     return render_template('user.html', title=MAIN_TITLE, user=user, playlist_title=playlist['title'], tracklist=tracklist)
-
-@app.route('/store_playlist', methods=['GET'])
-def store_playlist():
-
-    form = SimpleForm()
-
-    if form.validate_on_submit():
-        print "VALIDATE ON SUBMIT. DATA :"
-        print form.checkboxes.data
-    else:
-        print "ERROR ON VALIDATE ON SUBMT"
-        print form.errors
-
-    PLAYLIST_TO_PLAY.append(pid)
-    url_for_player = "https://www.deezer.com/plugins/player?format=classic&autoplay=false&playlist=true&width=700&height=350&color=007FEB&layout=dark&size=medium&type=playlist&id=" + pid + "&app_id=175951"
-
-    return render_template('player.html', title=MAIN_TITLE, url=url_for_player)
 
 
 @app.route('/logout')
