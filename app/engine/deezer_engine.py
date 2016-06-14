@@ -95,18 +95,12 @@ class DeezerEngine:
 
     def create_playlist(self, user, playlist_name):
         #Fonctionne sous PostMan mais pas ici :(
-        url = "https://api.deezer.com/user/" + str(user['id']) + "/playlists"
-        data = '?title=' + playlist_name + '&access_token=' + user['token']
-        headers = {'Content-Type': 'application/x-www-form-urlencoded'}
-        #json_data = json.dumps(data)
+        url = "https://api.deezer.com/user/" + str(user['id']) + "/playlists?title=" + playlist_name + "&access_token=" + user['token']
 
         try:
-            opener = urllib2.build_opener()
-            request = Request(url, data=data, headers=headers)
-            print request.get_method()
-            LOGGER.debug("Requested url : " + url +  str(request.data))
+            request = Request(url, data="")
+            LOGGER.debug("Requested url : " + url)
             response = urlopen(request)
-            #parsed_json = json.loads(response.read())
             LOGGER.debug("Response: " + response.read())
 
         except URLError, e:
