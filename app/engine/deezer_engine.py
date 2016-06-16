@@ -1,3 +1,5 @@
+#coding: utf8
+
 import urllib2 as urllib2
 from urllib2 import Request, urlopen, URLError
 from urlparse import urlparse
@@ -94,14 +96,14 @@ class DeezerEngine:
             return playlist.find_playlists()
 
     def create_playlist(self, user, playlist_name):
-        #Fonctionne sous PostMan mais pas ici :(
-        url = "https://api.deezer.com/user/" + str(user['id']) + "/playlists?title=" + playlist_name + "&access_token=" + user['token']
-
+        url = "https://api.deezer.com/user/" + str(user['id']).encode('utf-8') + "/playlists?title=" + playlist_name.encode('utf-8') + "&access_token=" + user['token'].encode('utf-8')
         try:
             request = Request(url, data="")
             LOGGER.debug("Requested url : " + url)
             response = urlopen(request)
-            LOGGER.debug("Response: " + response.read())
+            parsed_json = json.loads(response.read())
+            LOGGER.debug("Response: " + str(parsed_json))
+            return parsed_json
 
         except URLError, e:
             print "Error while communicating with remote server :" , e

@@ -1,10 +1,30 @@
 {% extends "base.html" %}
+{% block style %}
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='general.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='new_playlist.css') }}">
+{% endblock %}
 {% block content %}
+{% include 'navbar.html' %}
+<div id="new_playlist">
   <form name="playlist_form" action="" method="POST">
     {{ form.csrf_token  }}
+    <p>
+      <h2> Créer une playlist </h2>
+    </p>
+    <p>
     {{form.new_playlist_name}}
+  </p>
     <p>
       <input id="submit" value="Créer la playlist" type='submit'/>
     </p>
   </form>
+</div>
+{% if success %}
+  <div id=message>
+    <p style="color:green;text-decoration:bold;">
+      La playlist {{playlist_name}} a été créée avec le code : {{ id }}
+    </p>
+
+  </div>
+  {% endif %}
 {% endblock %}

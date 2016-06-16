@@ -1,17 +1,9 @@
 {% extends "base.html" %}
+{% block style %}
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='general.css') }}">
+{% endblock %}
 {% block content %}
-      <h1>All night DJ </h1>
-      <div id=user>
-      <h2>Hello {{session['name']}}</h2>
-        <p>
-          <ul>
-            <li><a href='/'>Retour à la homepage</a></li>
-            <li><a href='/new-playlist'>Créer une playlist</a></li>
-            <li><a href='/playlists'>Mes playlists</a></li>
-            <li><a href='/logout'>Logout</a></li>
-          </ul>
-        </p>
-      </div>
+    {% include 'navbar.html' %}
       {% if form %}
       <div id=form>
         <form name="playlist_form" action="" method="POST">

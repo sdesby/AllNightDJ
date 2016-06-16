@@ -1,0 +1,13 @@
+body{
+  font-family: Lucida Sans Unicode, Lucida Grande, sans-serif;
+  background-color: white;
+}
+
+h1{
+  text-align: center;
+}
+
+h2 {
+  padding: 3px;
+  margin: 5px;
+}

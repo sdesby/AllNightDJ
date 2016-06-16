@@ -1,8 +1,11 @@
+#coding: utf8
+
 from app import app
 from urllib2 import Request
 from urlparse import urlparse
 from flask import render_template, redirect, request, session
 from engine.deezer_engine import DeezerEngine
+from engine import niceUrl
 from model.user import User
 from model.playlist import Playlist
 from forms.playlist_form import SimpleForm
@@ -71,9 +74,12 @@ def new_playlist():
 
     if form.validate_on_submit():
         playlist_name = form.new_playlist_name.data
+        playlist_name = niceUrl.makeMePretty(playlist_name)
         deezer = DeezerEngine()
-        deezer.create_playlist(user, playlist_name)
-
+        json = deezer.create_playlist(user, playlist_name)
+        new_playlist_id = json['id']
+        user = User().find_user(session['token'])
+        return render_template('new-playlist.html', title='New playlist created', user=user, form=form, id=new_playlist_id, playlist_name=playlist_name, success="Y" )
     else:
         print "Oh No..."
 
