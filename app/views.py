@@ -3,7 +3,7 @@
 from app import app
 from urllib2 import Request
 from urlparse import urlparse
-from flask import render_template, redirect, request, session
+from flask import render_template, redirect, request, session, url_for
 from engine.deezer_engine import DeezerEngine
 from engine import niceUrl
 from model.user import User
@@ -115,16 +115,52 @@ def playlists():
             return render_template("player.html", playlists=playlists_for_json, size=len(playlists))
 
         elif 'fusion' in request.form:
-            form = FusionForm()
+            print "##### C'est fusion qui est dnas request form !"
+            fusion_form = FusionForm()
             playlists_ids = []
             for p in playlists:
                 playlists_ids.append(p['id'])
-            return render_template("playlists-fusion.html", playlists=playlists_ids, form=form)
+            print "HUHUHUHUHUHUHU"
+            playlists=""
+            for ids in playlists_ids:
+                playlists += str(ids) + '/'
+            return redirect(url_for('playlistsFusion', playlists=playlists, form=fusion_form))
     else:
-        print "ERROR ON VALIDATE ON SUBMT"
+        print "ERROR ON VALIDATE ON SUBMT de FORM (SimpleForm)"
         print form.errors
+        return render_template('user.html', title=MAIN_TITLE, form=form)
 
-    return render_template('user.html', title=MAIN_TITLE, form=form)
+@app.route('/playlists-fusion',  methods=['GET', 'POST'])
+def playlistsFusion():
+    print "Entering playlist fusion"
+    form = FusionForm()
+    playlist_ids =request.args.get('playlists')
+
+    if form.validate_on_submit():
+        print "Code : "
+        code = form.playlist_code.data
+
+        print "Playlist ids : "
+        print playlist_ids
+        ids_tbl = playlist_ids.split('/')
+        ids_lst = []
+        for i in ids_tbl:
+            ids_lst.append(i)
+        ids_lst.pop()
+        print ids_lst
+
+        tracklists = []
+        for i in ids_lst:
+            tracklists.append(DeezerEngine().get_track_ids_for_playlist(i))
+        print tracklists
+        user = User().find_user(session['token'])
+        DeezerEngine().add_tracks_playlist(user, tracklists, code)
+
+
+    else:
+        print "NON c'est pas BON"
+
+    return render_template("playlists-fusion.html", playlists=playlist_ids, form=form)
 
 @app.route('/tracklist', methods=['GET'])
 def tracklist():

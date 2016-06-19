@@ -102,12 +102,29 @@ class DeezerEngine:
             LOGGER.debug("Requested url : " + url)
             response = urlopen(request)
             parsed_json = json.loads(response.read())
-            LOGGER.debug("Response: " + str(parsed_json))
+        #    LOGGER.debug("Response: " + str(parsed_json))
             return parsed_json
 
         except URLError, e:
-            print "Error while communicating with remote server :" , e
+            print "Error while communicating with remote server : " , e
 
+    def add_tracks_playlist(self, user, tracklist, pid):
+        songs=""
+        end = len(tracklist)-1;
+        for i in range(end):
+            for j in tracklist[i]:
+                songs +=str(j)+','
+        songs=songs[:-1]
+
+        url = "http://api.deezer.com/playlist/" + pid + "/tracks"+"?songs=" + pid + "&access_token=" + user['token'].encode('utf-8')
+        try:
+            request = Request(url, data="")
+            LOGGER.debug("Requested url : " + url)
+            response = urlopen(request)
+            parsed_json = json.loads(response.read())
+            LOGGER.debug("Response: " + str(parsed_json))
+        except URLError, e:
+            print "Error while communating with the remote server : ", e
 
     def get_all_tracks_from_playlist(self, pid):
         url = "http://api.deezer.com/playlist/" + pid + "/tracks"
@@ -124,6 +141,25 @@ class DeezerEngine:
                 tracks_title.append(t)
 
             return tracks_title
+
+        except URLError, e:
+            print "Error while communicating with remote server :" , e
+
+    def get_track_ids_for_playlist(self, pid):
+        url =  "http://api.deezer.com/playlist/" + pid + "/tracks"
+        request = Request(url)
+
+        try:
+            LOGGER.debug("Requested url : " + url)
+            response = urlopen(request)
+            parsed_json = json.loads(response.read())
+        #    LOGGER.debug("Response: " + str(parsed_json))
+            tracks_ids = []
+
+            for t in parsed_json['data']:
+                tracks_ids.append(t['id'])
+
+            return tracks_ids
 
         except URLError, e:
             print "Error while communicating with remote server :" , e
