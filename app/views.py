@@ -10,6 +10,7 @@ from model.user import User
 from model.playlist import Playlist
 from forms.playlist_form import SimpleForm
 from forms.new_playlist_form import NewPlaylistForm
+from forms.fusion_form import FusionForm
 from log_configurator import allnightdj_logger as log
 
 #TODO : store user in session in order to replace all user = User().find_user(session['token']) declarations
@@ -104,12 +105,21 @@ def playlists():
         PLAYLIST_TO_PLAY=form.checkboxes.data
         p = Playlist()
         playlists = p.find_playlists_by_ids(PLAYLIST_TO_PLAY)
-        playlists_for_json = []
-        for p in playlists:
-            playlists_for_json.append(p['id'])
-            playlists_for_json.append(p['duration'])
-        LOGGER.info("Duree de la premiere piste : " + str(playlists[0]['duration'])+ " secondes")
-        return render_template("player.html", playlists=playlists_for_json, size=len(playlists))
+
+        if 'play' in request.form:
+            playlists_for_json = []
+            for p in playlists:
+                playlists_for_json.append(p['id'])
+                playlists_for_json.append(p['duration'])
+            LOGGER.info("Duree de la premiere piste : " + str(playlists[0]['duration'])+ " secondes")
+            return render_template("player.html", playlists=playlists_for_json, size=len(playlists))
+
+        elif 'fusion' in request.form:
+            form = FusionForm()
+            playlists_ids = []
+            for p in playlists:
+                playlists_ids.append(p['id'])
+            return render_template("playlists-fusion.html", playlists=playlists_ids, form=form)
     else:
         print "ERROR ON VALIDATE ON SUBMT"
         print form.errors

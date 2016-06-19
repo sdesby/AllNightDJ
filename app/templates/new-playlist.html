@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block style %}
-  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='general.css') }}">
-  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='new_playlist.css') }}">
+{{ super() }}
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style/new_playlist.css') }}">
 {% endblock %}
 {% block content %}
 {% include 'navbar.html' %}

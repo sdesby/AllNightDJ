@@ -1,6 +1,9 @@
 body{
   font-family: Lucida Sans Unicode, Lucida Grande, sans-serif;
-  background-color: white;
+  background-color: black;
+  background-image: url(/static/images/disco-ball.jpg);
+  background-attachment:fixed;
+  color: white;
 }
 
 h1{
