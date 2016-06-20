@@ -1,16 +1,60 @@
-body{
+/*------- Genral part -------*/
+
+body {
   font-family: Lucida Sans Unicode, Lucida Grande, sans-serif;
   background-color: black;
   background-image: url(/static/images/disco-ball.jpg);
   background-attachment:fixed;
+  background-repeat:no-repeat;
   color: white;
 }
 
-h1{
+h1 {
   text-align: center;
 }
 
 h2 {
   padding: 3px;
   margin: 5px;
+}
+
+a {
+    text-decoration: none;
+}
+
+/*------- Login part -------*/
+#login ul {
+    position:absolute;
+    top:0;
+    right:0;
+}
+
+#login ul li {
+    list-style: none;
+}
+
+#login ul li a {
+    color: white;
+}
+
+#login ul li a:hover {
+    font-size: 18px;
+}
+
+#login ul li a:visited {
+    font-style: italic;
+}
+
+/*------- NavBar part -------*/
+
+#navbar ul {
+    border: 1px white solid;
+    background-color: white;
+    width: 50%;
+}
+
+#navbar ul li {
+    display:inline-block;
+    margin: 5px;
+    padding: 5px;
 }
