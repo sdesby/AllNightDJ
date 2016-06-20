@@ -137,25 +137,21 @@ def playlistsFusion():
     playlist_ids =request.args.get('playlists')
 
     if form.validate_on_submit():
-        print "Code : "
         code = form.playlist_code.data
+        LOGGER.info(u'Destination playlist Id : ' + code)
 
-        print "Playlist ids : "
-        print playlist_ids
         ids_tbl = playlist_ids.split('/')
         ids_lst = []
         for i in ids_tbl:
             ids_lst.append(i)
         ids_lst.pop()
-        print ids_lst
 
         tracklists = []
-        for i in ids_lst:
-            tracklists.append(DeezerEngine().get_track_ids_for_playlist(i))
-        print tracklists
         user = User().find_user(session['token'])
-        DeezerEngine().add_tracks_playlist(user, tracklists, code)
+        for i in ids_lst:
+            tracklists.append(DeezerEngine().get_track_ids_for_playlist(i, user['token']))
 
+        DeezerEngine().add_tracks_playlist(user, tracklists, code)
 
     else:
         print "NON c'est pas BON"

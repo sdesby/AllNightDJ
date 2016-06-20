@@ -111,18 +111,20 @@ class DeezerEngine:
     def add_tracks_playlist(self, user, tracklist, pid):
         songs=""
         end = len(tracklist)-1;
-        for i in range(end):
+        for i in range(end+1):
             for j in tracklist[i]:
                 songs +=str(j)+','
-        songs=songs[:-1]
 
-        url = "http://api.deezer.com/playlist/" + pid + "/tracks"+"?songs=" + pid + "&access_token=" + user['token'].encode('utf-8')
+        songs=songs[:-1]
+        LOGGER.debug("Songs to add to playlist: " + songs)
+
+        url = "http://api.deezer.com/playlist/" + pid + "/tracks"+"?songs=" + songs + "&access_token=" + user['token'].encode('utf-8')
         try:
             request = Request(url, data="")
-            LOGGER.debug("Requested url : " + url)
+            LOGGER.debug("add_tracks_playlist::Requested url : " + url)
             response = urlopen(request)
             parsed_json = json.loads(response.read())
-            LOGGER.debug("Response: " + str(parsed_json))
+            LOGGER.debug("add_tracks_playlist::Response: " + str(parsed_json))
         except URLError, e:
             print "Error while communating with the remote server : ", e
 
@@ -145,15 +147,15 @@ class DeezerEngine:
         except URLError, e:
             print "Error while communicating with remote server :" , e
 
-    def get_track_ids_for_playlist(self, pid):
-        url =  "http://api.deezer.com/playlist/" + pid + "/tracks"
+    def get_track_ids_for_playlist(self, pid, token):
+        url =  "http://api.deezer.com/playlist/" + pid + "/tracks?access_token=" + token.encode('utf-8')
         request = Request(url)
 
         try:
             LOGGER.debug("Requested url : " + url)
             response = urlopen(request)
             parsed_json = json.loads(response.read())
-        #    LOGGER.debug("Response: " + str(parsed_json))
+            LOGGER.debug("Response: " + str(parsed_json))
             tracks_ids = []
 
             for t in parsed_json['data']:
