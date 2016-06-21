@@ -2,15 +2,13 @@
 
 body {
   font-family: Lucida Sans Unicode, Lucida Grande, sans-serif;
-  background-color: black;
-  background-image: url(/static/images/disco-ball.jpg);
-  background-attachment:fixed;
-  background-repeat:no-repeat;
+  background-color: #CCC;
   color: white;
 }
 
 h1 {
   text-align: center;
+  color: #771100;
 }
 
 h2 {
@@ -26,11 +24,14 @@ a {
 #login ul {
     position:absolute;
     top:0;
-    right:0;
+    right:5%;
 }
 
 #login ul li {
     list-style: none;
+    display:inline-block;
+    margin: 5px;
+    padding: 5px;
 }
 
 #login ul li a {
@@ -38,23 +39,40 @@ a {
 }
 
 #login ul li a:hover {
-    font-size: 18px;
+    color: grey;
 }
 
 #login ul li a:visited {
+    color:grey;
     font-style: italic;
 }
 
 /*------- NavBar part -------*/
 
+#navbar {
+    float:left;
+    width: 20%;
+    height: 150px;
+}
+
 #navbar ul {
     border: 1px white solid;
-    background-color: white;
+    background-color: #999;
     width: 50%;
 }
 
 #navbar ul li {
     display:inline-block;
-    margin: 5px;
+    list-style-position: inside;
     padding: 5px;
+}
+
+#navbar ul li a{
+    color: white;
+}
+
+/*------- Content part -------*/
+
+#content {
+    float:left;
 }

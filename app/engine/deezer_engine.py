@@ -70,7 +70,7 @@ class DeezerEngine:
                 print "Error while communicating with remote server :" , e
 
         else:
-            return user.find_user_with_token(token)
+            return user.find_user(token)
 
     def get_playlists_for_user(self, user):
         LOGGER.info("Entering get_playlists_for_user")

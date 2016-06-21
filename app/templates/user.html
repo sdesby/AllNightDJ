@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
     {% include 'navbar.html' %}
+    <div id=content>
       {% if form %}
       <div id=form>
         <form name="playlist_form" action="" method="POST">
@@ -22,5 +23,6 @@
         {% endfor%}
       </ul>
       </div>
+  </div>
       {% endif %}
 {% endblock %}
