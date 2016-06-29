@@ -1,6 +1,6 @@
 from mongokit import Connection, Document
-from ..db import database_init as db
-from ..log_configurator import allnightdj_logger as log
+from ...db import database_init as db
+from ...log_configurator import allnightdj_logger as log
 
 LOGGER = log.get_logger("allnightdj")
 

@@ -6,14 +6,14 @@ from urlparse import urlparse
 from flask import render_template, redirect, request, session, url_for
 from engine.deezer_engine import DeezerEngine
 from engine import niceUrl
-from model.user import User
-from model.playlist import Playlist
+from model.Deezer.deezer_user import DeezerUser
+from model.Deezer.playlist import Playlist
 from forms.playlist_form import SimpleForm
 from forms.new_playlist_form import NewPlaylistForm
 from forms.fusion_form import FusionForm
 from log_configurator import allnightdj_logger as log
 
-#TODO : store user in session in order to replace all user = User().find_user(session['token']) declarations
+#TODO : store user in session in order to replace all user = DeezerUser().find_user(session['token']) declarations
 LOGGER = log.get_logger("allnightdj")
 MAIN_TITLE="All Night DJ"
 PLAYLIST_TO_PLAY = []
@@ -65,12 +65,12 @@ def deezer_callback():
 
 @app.route('/user')
 def user():
-    user = User().find_user(session['token'])
+    user = DeezerUser().find_user(session['token'])
     return render_template('user.html', title='User page', user=user )
 
 @app.route('/new-playlist', methods=['GET', 'POST'])
 def new_playlist():
-    user = User().find_user(session['token'])
+    user = DeezerUser().find_user(session['token'])
     form = NewPlaylistForm()
 
     if form.validate_on_submit():
@@ -79,19 +79,24 @@ def new_playlist():
         deezer = DeezerEngine()
         json = deezer.create_playlist(user, playlist_name)
         new_playlist_id = json['id']
-        user = User().find_user(session['token'])
+        user = DeezerUser().find_user(session['token'])
         return render_template('new-playlist.html', title='New playlist created', user=user, form=form, id=new_playlist_id, playlist_name=playlist_name, success="Y" )
     else:
         print "Oh No..."
 
-    user = User().find_user(session['token'])
+    user = DeezerUser().find_user(session['token'])
     return render_template('new-playlist.html', title='Create a new playlist', user=user, form=form )
 
 
 @app.route('/playlists', methods=['GET', 'POST'])
 def playlists():
     deezer = DeezerEngine()
-    user = User().find_user(session['token'])
+    user = DeezerUser().find_user(session['token'])
+
+    print "************************"
+    print user
+    print "************************"
+
     playlists = deezer.get_playlists_for_user(user)
 
     list_of_values = []
@@ -147,7 +152,7 @@ def playlistsFusion():
         ids_lst.pop()
 
         tracklists = []
-        user = User().find_user(session['token'])
+        user = DeezerUser().find_user(session['token'])
         for i in ids_lst:
             tracklists.append(DeezerEngine().get_track_ids_for_playlist(i, user['token']))
 
@@ -174,7 +179,7 @@ def tracklist():
 def logout():
     # TODO : add logout from Deezer API
     if 'token' in session:
-        user = User()
+        user = DeezerUser()
         playlist = Playlist()
         deezer = DeezerEngine()
         deezer.logout(session['token'])

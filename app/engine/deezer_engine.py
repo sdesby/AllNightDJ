@@ -5,8 +5,8 @@ from urllib2 import Request, urlopen, URLError
 from urlparse import urlparse
 import json
 import requests
-from ..model.user import User
-from ..model.playlist import Playlist
+from ..model.Deezer.deezer_user import DeezerUser
+from ..model.Deezer.playlist import Playlist
 from ..db import database_init as db
 from ..log_configurator import allnightdj_logger as log
 
@@ -50,7 +50,7 @@ class DeezerEngine:
 
     def get_user_with_token(self, token):
         LOGGER.info("Entering get_user_with_token")
-        user = User()
+        user = DeezerUser()
         already_exists = user.find_user(token)
 
         if not already_exists:
