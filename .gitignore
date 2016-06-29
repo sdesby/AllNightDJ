@@ -1,3 +1,6 @@
-#Python files
+### Python files
 *.pyc
 app/**/*.pyc
+
+### Mac OS files
+**/.DS_Store

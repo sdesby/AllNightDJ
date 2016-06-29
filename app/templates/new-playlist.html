@@ -5,6 +5,7 @@
 {% endblock %}
 {% block content %}
 {% include 'navbar.html' %}
+<div id=content>
 <div id="new_playlist">
   <form name="playlist_form" action="" method="POST">
     {{ form.csrf_token  }}
@@ -27,4 +28,5 @@
 
   </div>
   {% endif %}
+  </div>
 {% endblock %}

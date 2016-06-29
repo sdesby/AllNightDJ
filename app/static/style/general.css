@@ -2,13 +2,13 @@
 
 body {
   font-family: Lucida Sans Unicode, Lucida Grande, sans-serif;
-  background-color: #CCC;
+  background-color: #FFC300;
   color: white;
 }
 
 h1 {
   text-align: center;
-  color: #771100;
+  color: #581845;
 }
 
 h2 {
@@ -35,7 +35,7 @@ a {
 }
 
 #login ul li a {
-    color: white;
+    color: #C70039;
 }
 
 #login ul li a:hover {
@@ -43,22 +43,31 @@ a {
 }
 
 #login ul li a:visited {
-    color:grey;
+    color:#900C3F;
     font-style: italic;
 }
 
 /*------- NavBar part -------*/
 
+#siteTitle {
+    border-bottom: 1px black solid;
+}
+
 #navbar {
     float:left;
     width: 20%;
-    height: 150px;
+    height: 300px;
+    margin-top: 15px;
 }
 
 #navbar ul {
     border: 1px white solid;
-    background-color: #999;
-    width: 50%;
+    background-color: #900C3F;
+    width: 100%;
+    height: 100%;
+    margin: 0px;
+    padding-left: 2px;
+    padding-right: 0px;
 }
 
 #navbar ul li {
@@ -75,4 +84,7 @@ a {
 
 #content {
     float:left;
+    width:78%;
+    height: 800px;
+    margin-top: 15px;
 }
