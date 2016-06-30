@@ -92,11 +92,6 @@ def new_playlist():
 def playlists():
     deezer = DeezerEngine()
     user = DeezerUser().find_user(session['token'])
-
-    print "************************"
-    print user
-    print "************************"
-
     playlists = deezer.get_playlists_for_user(user)
 
     list_of_values = []

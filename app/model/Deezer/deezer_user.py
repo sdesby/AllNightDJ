@@ -27,9 +27,6 @@ class DeezerUser(Document):
     }
     required_fields = ['id', 'name', 'email', 'token', 'tracklist']
 
-    def __repr__(self):
-        return "<User %r>" % (self.name)
-
     def store_user(self, parsed_json, token):
         LOGGER.info("Entering store_user")
         connection = db.connection()
@@ -55,7 +52,7 @@ class DeezerUser(Document):
         LOGGER.info("Entering find_user()")
         connection = db.connection()
         collection = connection['allnightdj'].users
-        user = collection.User.find_one({'token': token})
+        user = collection.DeezerUser.find_one({'token': token})
         return user
 
 LOGGER.debug("Connection to User in database")
