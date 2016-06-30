@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+    {% include 'navbar.html' %}
+    <div id=content>
+      {% if form %}
+      <div id=form>
+        <form name="playlist_form" action="" method="POST">
+          {{ form.csrf_token  }}
+          {{form.checkboxes}}
+          <p>
+              <input value="Lire ces playlists" name='play' type='submit'/>
+              <input value="Fusionner ces playlists dans une autre" name='fusion' type='submit'/>
+          </p>
+        </form>
+      </div>
+      {% endif %}
+      {% if tracklist %}
+      <div id=tracklist>
+        <h2>Liste des titres de la playlist {{playlist_title}}</h2>
+        <ul>
+        {% for t in tracklist %}
+          <li>{{t['title']}} - {{t['artist']['name']}} - {{t['album']['title']}} - <a href={{t['preview']}}>Extrait</a></li>
+        {% endfor%}
+      </ul>
+      </div>
+  </div>
+      {% endif %}
+{% endblock %}

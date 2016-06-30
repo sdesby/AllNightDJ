@@ -10,5 +10,20 @@
       </div>
       <div id='siteTitle'>
        <h1>All night DJ </h1>
-   </div>
+      </div>
+      <div id="signin">
+          <form name="signin_form" action="" method="POST">
+            {{ form.csrf_token  }}
+            <p>
+              <h2> S'inscrire sur AllNightDj </h2>
+            </p>
+            <p>
+            {{form.new_user_name}}
+            {{form.new_user_mail}}
+          </p>
+            <p>
+              <input id="submit" value="Créer mon compte" type='submit'/>
+            </p>
+          </form>
+      </div>
 {% endblock %}

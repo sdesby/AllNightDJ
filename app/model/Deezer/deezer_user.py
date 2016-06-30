@@ -55,6 +55,6 @@ class DeezerUser(Document):
         user = collection.DeezerUser.find_one({'token': token})
         return user
 
-LOGGER.debug("Connection to User in database")
+LOGGER.debug("Connection to DeezerUser in database")
 c = db.connection()
 c.register([DeezerUser])

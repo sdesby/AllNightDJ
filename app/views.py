@@ -6,11 +6,13 @@ from urlparse import urlparse
 from flask import render_template, redirect, request, session, url_for
 from engine.deezer_engine import DeezerEngine
 from engine import niceUrl
+from model.user import User
 from model.Deezer.deezer_user import DeezerUser
 from model.Deezer.playlist import Playlist
-from forms.playlist_form import SimpleForm
 from forms.new_playlist_form import NewPlaylistForm
+from forms.signin_form import SignInForm
 from forms.fusion_form import FusionForm
+from forms.playlist_form import SimpleForm
 from log_configurator import allnightdj_logger as log
 
 #TODO : store user in session in order to replace all user = DeezerUser().find_user(session['token']) declarations
@@ -18,14 +20,25 @@ LOGGER = log.get_logger("allnightdj")
 MAIN_TITLE="All Night DJ"
 PLAYLIST_TO_PLAY = []
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def index():
+    form = SignInForm()
+
+    if form.validate_on_submit():
+        new_user_name = form.new_user_name.data
+        new_user_mail = form.new_user_mail.data
+        json = User().create_new_user(new_user_name, new_user_mail)
+        return redirect('/user', code=302)
+    else:
+        print "Oh No..."
+
+
     if 'token' not in session:
-        return render_template('index.html', title=MAIN_TITLE)
+        return render_template('index.html', title=MAIN_TITLE, form=form)
     else:
         LOGGER.debug("ACCESS TOKEN : " + session['token'])
         LOGGER.debug("User already logged in redirecting to User page ")
-        return redirect('/user', code=302)
+        return redirect('/deezer-user', code=302)
 
 @app.route('/login')
 def login():
@@ -39,13 +52,13 @@ def login():
 
     else:
         LOGGER.debug("ACCESS TOKEN : " + session['token'])
-        return redirect('/user', code=302)
+        return redirect('/deezer-user', code=302)
 
     if request.endpoint != 'callback':
         LOGGER.debug("Redirecting to : " + url)
         return redirect(url, code=302)
     else:
-        return render_template('index.html', title=MAIN_TITLE)
+        return render_template('index.html', title=MAIN_TITLE, form=SignInForm())
     #else:
     #    LOGGER.debug("ACCESS TOKEN : " + access_token)
     #    return render_template('index.html', title=MAIN_TITLE)
@@ -61,12 +74,12 @@ def deezer_callback():
     session['token'] = user['token']
     session['name'] = user['name']
 
-    return redirect('user')
+    return redirect('deezer-user')
 
-@app.route('/user')
+@app.route('/deezer-user')
 def user():
     user = DeezerUser().find_user(session['token'])
-    return render_template('user.html', title='User page', user=user )
+    return render_template('deezer-user.html', title='User page', user=user )
 
 @app.route('/new-playlist', methods=['GET', 'POST'])
 def new_playlist():
@@ -128,7 +141,7 @@ def playlists():
     else:
         print "ERROR ON VALIDATE ON SUBMT de FORM (SimpleForm)"
         print form.errors
-        return render_template('user.html', title=MAIN_TITLE, form=form)
+        return render_template('deezer-user.html', title=MAIN_TITLE, form=form)
 
 @app.route('/playlists-fusion',  methods=['GET', 'POST'])
 def playlistsFusion():
@@ -167,7 +180,7 @@ def tracklist():
     tracklist = DeezerEngine().get_all_tracks_from_playlist(pid)
     playlist = Playlist().find_playlist_with_id(pid)
 
-    return render_template('user.html', title=MAIN_TITLE, user=user, playlist_title=playlist['title'], tracklist=tracklist)
+    return render_template('deezer-user.html', title=MAIN_TITLE, user=user, playlist_title=playlist['title'], tracklist=tracklist)
 
 
 @app.route('/logout')
@@ -181,4 +194,4 @@ def logout():
         user.remove_user(session['token'])
         playlist.remove_playlists()
         session.clear()
-    return render_template('index.html', title=MAIN_TITLE)
+    return render_template('index.html', title=MAIN_TITLE, form=SignInForm())
