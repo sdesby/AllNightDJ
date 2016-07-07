@@ -18,12 +18,32 @@
               <h2> S'inscrire sur AllNightDj </h2>
             </p>
             <p>
+              Pseudo :
             {{form.new_user_name}}
+          </p>
+          <p>
+            E-mail :
             {{form.new_user_mail}}
+          </p>
+          <p>
+            Mot de passe :
+            {{form.new_user_password}}
+          </p>
+          <p>
+            Confirmer le mot de passe :
+            {{form.confirm}}
           </p>
             <p>
               <input id="submit" value="Créer mon compte" type='submit'/>
             </p>
           </form>
+      </div>
+      <div class='error'>
+        {% if error %}
+        <p>
+          Tetstetetetststertrtrtetetetstst
+          {{error}}
+        </p>
+        {% endif %}
       </div>
 {% endblock %}

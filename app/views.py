@@ -27,8 +27,17 @@ def index():
     if form.validate_on_submit():
         new_user_name = form.new_user_name.data
         new_user_mail = form.new_user_mail.data
-        json = User().create_new_user(new_user_name, new_user_mail)
-        return redirect('/user', code=302)
+        new_user_password = form.new_user_password.data
+        if User().already_exists(new_user_name, new_user_mail, new_user_password):
+            print "         ###########   "
+            print "             User alredy exists"
+            print "         ###########   "
+            error = unicode("Cet utiliateur existe deja, veuillez vous connecter avec votre compte ou choisir de nouveaux identifiants")
+            print error
+            render_template('index.html', title=MAIN_TITLE, form=form, error=error)
+        else:
+            json = User().create_new_user(new_user_name, new_user_mail, new_user_password)
+            return redirect('/user', code=302)
     else:
         print "Oh No..."
 
@@ -59,9 +68,6 @@ def login():
         return redirect(url, code=302)
     else:
         return render_template('index.html', title=MAIN_TITLE, form=SignInForm())
-    #else:
-    #    LOGGER.debug("ACCESS TOKEN : " + access_token)
-    #    return render_template('index.html', title=MAIN_TITLE)
 
 @app.route('/callback')
 def deezer_callback():
