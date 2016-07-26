@@ -29,18 +29,14 @@ def index():
         new_user_mail = form.new_user_mail.data
         new_user_password = form.new_user_password.data
         if User().already_exists(new_user_name, new_user_mail, new_user_password):
-            print "         ###########   "
-            print "             User alredy exists"
-            print "         ###########   "
+            LOGGER.debug("User \"" + new_user_name + "\" already exists")
             error = unicode("Cet utiliateur existe deja, veuillez vous connecter avec votre compte ou choisir de nouveaux identifiants")
-            print error
-            render_template('index.html', title=MAIN_TITLE, form=form, error=error)
+            return render_template('index.html', title=MAIN_TITLE, form=form, error=error)
         else:
-            json = User().create_new_user(new_user_name, new_user_mail, new_user_password)
-            return redirect('/user', code=302)
-    else:
-        print "Oh No..."
-
+            user = User().create_new_user(new_user_name, new_user_mail, new_user_password)
+            session['userId'] = user['id']
+            print "******* Session user id : " + str(session['userId'])
+            return render_template('user.html', title=MAIN_TITLE)
 
     if 'token' not in session:
         return render_template('index.html', title=MAIN_TITLE, form=form)
@@ -48,6 +44,10 @@ def index():
         LOGGER.debug("ACCESS TOKEN : " + session['token'])
         LOGGER.debug("User already logged in redirecting to User page ")
         return redirect('/deezer-user', code=302)
+
+@app.route('/user')
+def user():
+    print 'Youhou'
 
 @app.route('/login')
 def login():
@@ -83,9 +83,18 @@ def deezer_callback():
     return redirect('deezer-user')
 
 @app.route('/deezer-user')
-def user():
-    user = DeezerUser().find_user(session['token'])
-    return render_template('deezer-user.html', title='User page', user=user )
+def deezer_user():
+    deezer = DeezerEngine()
+    if 'token' not in session:
+        if request.endpoint != 'callback':
+            url = deezer.get_authentification()
+            LOGGER.debug("Redirecting to : " + url)
+            return redirect(url, code=302)
+
+    else:
+        user = DeezerUser().find_user(session['token'])
+        LOGGER.debug("ACCESS TOKEN : " + session['token'])
+        return render_template('deezer-user.html', title='User page', user=user )
 
 @app.route('/new-playlist', methods=['GET', 'POST'])
 def new_playlist():

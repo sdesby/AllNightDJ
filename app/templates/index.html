@@ -38,12 +38,11 @@
             </p>
           </form>
       </div>
+      {% if error %}
       <div class='error'>
-        {% if error %}
         <p>
-          Tetstetetetststertrtrtetetetstst
           {{error}}
         </p>
-        {% endif %}
       </div>
+      {% endif %}
 {% endblock %}

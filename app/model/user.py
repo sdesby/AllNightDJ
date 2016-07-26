@@ -22,7 +22,7 @@ class User(Document):
     'name': max_length(50),
     'email': max_length(120),
     }
-    required_fields = ['name', 'email']
+    required_fields = ['name', 'email', 'pass']
 
     def __repr__(self):
         return "<User %r>" % (self.name)
@@ -38,8 +38,7 @@ class User(Document):
         user['email'] = new_user_mail
         user['pass'] = unicode(hash_pass(new_user_password))
         user.save()
-        print "**** New User Id ****"
-        print user['id']
+        LOGGER.info("User with id " + str(user['id']) + " has been created")
         LOGGER.info("Leaving create_new_user")
         return user
 
