@@ -49,15 +49,21 @@ class User(Document):
         all_users = collection.User.find()
         return all_users
 
-    def already_exists(self, new_user_name, new_user_mail, new_user_password):
+    def already_exists(self, user_name, user_password):
         LOGGER.info("Entering already_exists")
-        connection = db.connection()
-        collection = connection['allnightdj'].users
-        user = collection.User.find_one({'name': new_user_name, 'email': new_user_mail})
+        user = self.find_one_user(user_name, user_password)
         if user is None:
             return False
         else:
             return True
+
+    def find_one_user(self, user_name, user_password):
+        LOGGER.info("Entering User::find_one")
+        connection = db.connection()
+        collection = connection['allnightdj'].users
+        LOGGER.debug("Querying for user " + user_name + " with pass " + unicode(hash_pass(user_password)))
+        return collection.User.find_one({'name': user_name, 'pass': unicode(hash_pass(user_password))})
+
 
 def hash_pass(password):
     # used to hash the password similar to how MySQL hashes passwords with the password() function.

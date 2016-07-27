@@ -13,6 +13,7 @@ from forms.new_playlist_form import NewPlaylistForm
 from forms.signin_form import SignInForm
 from forms.fusion_form import FusionForm
 from forms.playlist_form import SimpleForm
+from forms.login_form import LoginForm
 from log_configurator import allnightdj_logger as log
 
 #TODO : store user in session in order to replace all user = DeezerUser().find_user(session['token']) declarations
@@ -37,37 +38,31 @@ def index():
             session['userId'] = user['id']
             print "******* Session user id : " + str(session['userId'])
             return render_template('user.html', title=MAIN_TITLE)
-
-    if 'token' not in session:
-        return render_template('index.html', title=MAIN_TITLE, form=form)
     else:
-        LOGGER.debug("ACCESS TOKEN : " + session['token'])
-        LOGGER.debug("User already logged in redirecting to User page ")
-        return redirect('/deezer-user', code=302)
+        return render_template('index.html', title=MAIN_TITLE, form=SignInForm())
 
-@app.route('/user')
-def user():
-    print 'Youhou'
-
-@app.route('/login')
+@app.route('/login', methods=['GET', 'POST'])
 def login():
     LOGGER.info("Entering Login")
 
-    deezer = DeezerEngine()
+    form = LoginForm()
 
-    if 'token' not in session:
-        url = deezer.get_authentification()
-        LOGGER.debug("URL from Authentification : " + url)
+    if form.validate_on_submit():
+        user_name = form.user_name.data
+        user_password = form.user_password.data
+
+        if User().already_exists(user_name, user_password):
+            user = User().find_one_user(user_name, user_password)
+            session['userId'] = user['id']
+            print "******* Session user id : " + str(session['userId'])
+            return render_template('user.html', title=MAIN_TITLE)
+
+        else:
+            error = unicode("Unknow user, please retry")
+            return render_template('index.html', title=MAIN_TITLE, form=SignInForm(), error=error)
 
     else:
-        LOGGER.debug("ACCESS TOKEN : " + session['token'])
-        return redirect('/deezer-user', code=302)
-
-    if request.endpoint != 'callback':
-        LOGGER.debug("Redirecting to : " + url)
-        return redirect(url, code=302)
-    else:
-        return render_template('index.html', title=MAIN_TITLE, form=SignInForm())
+        return render_template('login.html', title=MAIN_TITLE, form=LoginForm())
 
 @app.route('/callback')
 def deezer_callback():
@@ -85,6 +80,7 @@ def deezer_callback():
 @app.route('/deezer-user')
 def deezer_user():
     deezer = DeezerEngine()
+
     if 'token' not in session:
         if request.endpoint != 'callback':
             url = deezer.get_authentification()

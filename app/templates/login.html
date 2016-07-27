@@ -1,15 +1,41 @@
 {% extends "base.html" %}
 {% block content %}
-      <h1>All night DJ </h1>
-      <div id="user">
-        <p>
-          <h2>Hello {{ user.name }}</h2>
-        </p>
+     <div id="login">
         <p>
           <ul>
-            <li><a href= {{ user.link }}>Your profile on Deezer's site</a></li>
-            <li><a href= {{ user.tracklist }}>Your tracklist on Deezer's site</a></li>
+            <li><a href="/"> Sign up </a></li>
+            <li><a href='/login'> Login </a></li>
+            <li><a href='/logout'> Logout </a></li>
           </ul>
         </p>
       </div>
+      <div id='siteTitle'>
+       <h1>All night DJ </h1>
+      </div>
+      <div id="login">
+          <form name="login_form" action="" method="POST">
+            {{ form.csrf_token  }}
+            <p>
+              <h2> Se connecter à AllNightDj </h2>
+            </p>
+            <p>
+              Pseudo :
+            {{form.user_name}}
+          </p>
+          <p>
+            Mot de passe :
+            {{form.user_password}}
+          </p>
+            <p>
+              <input id="submit" value="Se connecter" type='submit'/>
+            </p>
+          </form>
+      </div>
+      {% if error %}
+      <div class='error'>
+        <p>
+          {{error}}
+        </p>
+      </div>
+      {% endif %}
 {% endblock %}
