@@ -25,21 +25,24 @@ PLAYLIST_TO_PLAY = []
 def index():
     form = SignInForm()
 
-    if form.validate_on_submit():
-        new_user_name = form.new_user_name.data
-        new_user_mail = form.new_user_mail.data
-        new_user_password = form.new_user_password.data
-        if User().already_exists(new_user_name, new_user_mail, new_user_password):
-            LOGGER.debug("User \"" + new_user_name + "\" already exists")
-            error = unicode("Cet utiliateur existe deja, veuillez vous connecter avec votre compte ou choisir de nouveaux identifiants")
-            return render_template('index.html', title=MAIN_TITLE, form=form, error=error)
+    if 'userId' not in session:
+        if form.validate_on_submit():
+            new_user_name = form.new_user_name.data
+            new_user_mail = form.new_user_mail.data
+            new_user_password = form.new_user_password.data
+            if User().already_exists(new_user_name, new_user_password):
+                LOGGER.debug("User \"" + new_user_name + "\" already exists")
+                error = unicode("Cet utiliateur existe deja, veuillez vous connecter avec votre compte ou choisir de nouveaux identifiants")
+                return render_template('index.html', title=MAIN_TITLE, form=form, error=error)
+            else:
+                user = User().create_new_user(new_user_name, new_user_mail, new_user_password)
+                session['userId'] = user['id']
+                print "******* Session user id : " + str(session['userId'])
+                return render_template('user.html', title=MAIN_TITLE)
         else:
-            user = User().create_new_user(new_user_name, new_user_mail, new_user_password)
-            session['userId'] = user['id']
-            print "******* Session user id : " + str(session['userId'])
-            return render_template('user.html', title=MAIN_TITLE)
+            return render_template('index.html', title=MAIN_TITLE, form=SignInForm())
     else:
-        return render_template('index.html', title=MAIN_TITLE, form=SignInForm())
+        return render_template('user.html', title=MAIN_TITLE)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -69,11 +72,10 @@ def deezer_callback():
     LOGGER.info("Entering callback")
     deezer = DeezerEngine()
     code = request.args.get('code')
-    user = deezer.get_user(code)
-    tracklist = user['tracklist']
-    url_for_tracks = tracklist + "?access_token=" + user['token']
-    session['token'] = user['token']
-    session['name'] = user['name']
+    deezer_user = deezer.get_user(code)
+    deezer_user.store_applicationId(session['userId'])
+    tracklist = deezer_user['tracklist']
+    session['token'] = deezer_user['token']
 
     return redirect('deezer-user')
 
@@ -88,9 +90,9 @@ def deezer_user():
             return redirect(url, code=302)
 
     else:
-        user = DeezerUser().find_user(session['token'])
+        deezer_user = DeezerUser().find_user(session['token'])
         LOGGER.debug("ACCESS TOKEN : " + session['token'])
-        return render_template('deezer-user.html', title='User page', user=user )
+        return render_template('deezer-user.html', title='User page', user=deezer_user )
 
 @app.route('/new-playlist', methods=['GET', 'POST'])
 def new_playlist():
@@ -139,20 +141,23 @@ def playlists():
             return render_template("player.html", playlists=playlists_for_json, size=len(playlists))
 
         elif 'fusion' in request.form:
-            print "##### C'est fusion qui est dnas request form !"
+            LOGGER.info("Request for a fusion")
             fusion_form = FusionForm()
             playlists_ids = []
             for p in playlists:
                 playlists_ids.append(p['id'])
-            print "HUHUHUHUHUHUHU"
             playlists=""
             for ids in playlists_ids:
                 playlists += str(ids) + '/'
             return redirect(url_for('playlistsFusion', playlists=playlists, form=fusion_form))
+
+    elif form.is_submitted and not form.checkboxes.data:
+        print "Oh !"
+        error = unicode("Veuillez choisir au moins une playlist a fusioner")
+        return render_template('deezer-user.html', title=MAIN_TITLE, form=form, error=error)
+
     else:
-        print "ERROR ON VALIDATE ON SUBMT de FORM (SimpleForm)"
-        print form.errors
-        return render_template('deezer-user.html', title=MAIN_TITLE, form=form)
+        print "Hey !"
 
 @app.route('/playlists-fusion',  methods=['GET', 'POST'])
 def playlistsFusion():
@@ -178,7 +183,8 @@ def playlistsFusion():
         DeezerEngine().add_tracks_playlist(user, tracklists, code)
 
     else:
-        print "NON c'est pas BON"
+        LOGGER.error("Error validating PlaylistFusion form : ")
+        LOGGER.error(form.errors)
 
     return render_template("playlists-fusion.html", playlists=playlist_ids, form=form)
 
@@ -198,11 +204,11 @@ def tracklist():
 def logout():
     # TODO : add logout from Deezer API
     if 'token' in session:
-        user = DeezerUser()
+        deezer_user = DeezerUser()
         playlist = Playlist()
         deezer = DeezerEngine()
         deezer.logout(session['token'])
-        user.remove_user(session['token'])
+        deezer_user.remove_user(session['token'])
         playlist.remove_playlists()
         session.clear()
     return render_template('index.html', title=MAIN_TITLE, form=SignInForm())

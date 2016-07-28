@@ -23,6 +23,13 @@
         {% endfor%}
       </ul>
       </div>
+      {% if error %}
+      <div class='error'>
+          <p>
+              {{ error }}
+          </p>
+      </div>
+      {% endif %}
   </div>
       {% endif %}
 {% endblock %}

@@ -4,7 +4,7 @@
   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style/new_playlist.css') }}">
 {% endblock %}
 {% block content %}
-{% include 'navbar.html' %}
+{% include 'deezer-navbar.html' %}
 <div id=content>
 <div id="new_playlist">
   <form name="playlist_form" action="" method="POST">
@@ -24,9 +24,10 @@
   <div id=message>
     <p style="color:green;text-decoration:bold;">
       La playlist {{playlist_name}} a été créée avec le code : {{ id }}
+      <br/>
+      <a href="/playlists?playlist-code={{ id }}">Fusionner des playlists</a>
     </p>
-
-  </div>
+ </div>
   {% endif %}
   </div>
 {% endblock %}

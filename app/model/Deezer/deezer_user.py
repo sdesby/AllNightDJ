@@ -30,7 +30,7 @@ class DeezerUser(Document):
     def store_user(self, parsed_json, token):
         LOGGER.info("Entering store_user")
         connection = db.connection()
-        collection = connection['allnightdj'].users
+        collection = connection['allnightdj'].deezerUser
         user = collection.DeezerUser()
         user['id'] = parsed_json['id']
         user['name'] = parsed_json['name']
@@ -45,15 +45,22 @@ class DeezerUser(Document):
     def remove_user(self, token):
         LOGGER.info("Entering remove_user")
         connection = db.connection()
-        collection = connection['allnightdj'].users
+        collection = connection['allnightdj'].deezerUser
         collection.remove({'token': token})
 
     def find_user(self, token):
         LOGGER.info("Entering find_user()")
         connection = db.connection()
-        collection = connection['allnightdj'].users
+        collection = connection['allnightdj'].deezerUser
         user = collection.DeezerUser.find_one({'token': token})
         return user
+
+    def store_applicationId(self, applicationId):
+        LOGGER.info("Entering store_applicationId()")
+        connection = db.connection()
+        collection = connection['allnightdj'].deezerUser
+        self['allnightdjId'] = applicationId
+        self.save()
 
 LOGGER.debug("Connection to DeezerUser in database")
 c = db.connection()
