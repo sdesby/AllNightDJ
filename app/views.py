@@ -107,8 +107,6 @@ def new_playlist():
         new_playlist_id = json['id']
         user = DeezerUser().find_user(session['token'])
         return render_template('new-playlist.html', title='New playlist created', user=user, form=form, id=new_playlist_id, playlist_name=playlist_name, success="Y" )
-    else:
-        print "Oh No..."
 
     user = DeezerUser().find_user(session['token'])
     return render_template('new-playlist.html', title='Create a new playlist', user=user, form=form )
@@ -152,12 +150,8 @@ def playlists():
             return redirect(url_for('playlistsFusion', playlists=playlists, form=fusion_form))
 
     elif form.is_submitted and not form.checkboxes.data:
-        print "Oh !"
         error = unicode("Veuillez choisir au moins une playlist a fusioner")
         return render_template('deezer-user.html', title=MAIN_TITLE, form=form, error=error)
-
-    else:
-        print "Hey !"
 
 @app.route('/playlists-fusion',  methods=['GET', 'POST'])
 def playlistsFusion():
@@ -170,14 +164,11 @@ def playlistsFusion():
         LOGGER.info(u'Destination playlist Id : ' + code)
 
         ids_tbl = playlist_ids.split('/')
-        ids_lst = []
-        for i in ids_tbl:
-            ids_lst.append(i)
-        ids_lst.pop()
+        ids_tbl.pop()
 
         tracklists = []
         user = DeezerUser().find_user(session['token'])
-        for i in ids_lst:
+        for i in ids_tbl:
             tracklists.append(DeezerEngine().get_track_ids_for_playlist(i, user['token']))
 
         DeezerEngine().add_tracks_playlist(user, tracklists, code)

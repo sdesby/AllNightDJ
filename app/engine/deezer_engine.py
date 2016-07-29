@@ -67,7 +67,7 @@ class DeezerEngine:
                 return user.store_user(parsed_json, token)
 
             except URLError, e:
-                print "Error while communicating with remote server :" , e
+                LOGGER.error("Error while communicating with remote server :" , e)
 
         else:
             return user.find_user(token)
@@ -77,23 +77,26 @@ class DeezerEngine:
         playlist = Playlist()
         alreadyHasPlaylists = playlist.already_has_playlist()
 
-        if not alreadyHasPlaylists:
-            url = "http://api.deezer.com/user/me/playlists?access_token=" + user['token']
-            request = Request(url)
+        if alreadyHasPlaylists:
+            playlist.remove_playlists()
 
-            try:
-                LOGGER.debug("Requested url : " + url)
-                response = urlopen(request)
-                parsed_json = json.loads(response.read())
-                LOGGER.debug("Response: " + str(parsed_json))
+        #if not alreadyHasPlaylists:
+        url = "http://api.deezer.com/user/me/playlists?access_token=" + user['token']
+        request = Request(url)
 
-                playlist.storePlaylists(parsed_json)
-                return playlist.find_playlists()
+        try:
+            LOGGER.debug("Requested url : " + url)
+            response = urlopen(request)
+            parsed_json = json.loads(response.read())
+            LOGGER.debug("Response: " + str(parsed_json))
 
-            except URLError, e:
-                print "Error while communicating with remote server :" , e
-        else:
+            playlist.storePlaylists(parsed_json)
             return playlist.find_playlists()
+
+        except URLError, e:
+            LOGGER.error("Error while communicating with remote server :" , e)
+        #else:
+        #    return playlist.find_playlists()
 
     def create_playlist(self, user, playlist_name):
         url = "https://api.deezer.com/user/" + str(user['id']).encode('utf-8') + "/playlists?title=" + playlist_name.encode('utf-8') + "&access_token=" + user['token'].encode('utf-8')
@@ -106,7 +109,7 @@ class DeezerEngine:
             return parsed_json
 
         except URLError, e:
-            print "Error while communicating with remote server : " , e
+            LOGGER.error("Error while communicating with remote server : " , e)
 
     def add_tracks_playlist(self, user, tracklist, pid):
         songs=""
@@ -126,7 +129,7 @@ class DeezerEngine:
             parsed_json = json.loads(response.read())
             LOGGER.debug("add_tracks_playlist::Response: " + str(parsed_json))
         except URLError, e:
-            print "Error while communating with the remote server : ", e
+            LOGGER.error("Error while communating with the remote server : ", e)
 
     def get_all_tracks_from_playlist(self, pid):
         url = "http://api.deezer.com/playlist/" + pid + "/tracks"
@@ -145,7 +148,7 @@ class DeezerEngine:
             return tracks_title
 
         except URLError, e:
-            print "Error while communicating with remote server :" , e
+            LOGGER.error("Error while communicating with remote server :" , e)
 
     def get_track_ids_for_playlist(self, pid, token):
         url =  "http://api.deezer.com/playlist/" + pid + "/tracks?access_token=" + token.encode('utf-8')
@@ -164,7 +167,7 @@ class DeezerEngine:
             return tracks_ids
 
         except URLError, e:
-            print "Error while communicating with remote server :" , e
+            LOGGER.error("Error while communicating with remote server :" , e)
 
     def logout(self, token):
         ##Call to DEEZER_LOGOUT_URL does not disconnect in the app
@@ -174,16 +177,13 @@ class DeezerEngine:
         LOGGER.debug("Requested url : " + url)
         try:
             response = urlopen(request)
-            print "**** RESPONSE ****"
-            print response.getcode()
-            print response.geturl()
-            LOGGER.info("Opening url from request " + str(request))
+            LOGGER.debug("LOGOUT::Opening url from request " + str(request))
             url = response.geturl()
-            LOGGER.debug("Requested url : " + url)
+            LOGGER.debug("LOGOUT::Requested url : " + url)
             request = Request(url)
             try:
                 urlopen(request)
             except URLError, e:
-                print "Error while communicating with remote server :" , e
+                LOGGER.error("LOGOUT::Error while communicating with remote server :" , e)
         except URLError, e:
-            print "Error while communicating with remote server :" , e
+            LOGGER.error("LOGOUT::Error while communicating with remote server :" , e)

@@ -1,17 +1,20 @@
 {% extends "base.html" %}
 {% block content %}
     {% include 'navbar.html' %}
-    <form name="fusion_form" action="" method="POST">
-        {{ form.csrf_token  }}
-        <p>
-          <h2> Code de la playlist de destination : </h2>
-        </p>
-        <p>
-        {{form.playlist_code}}
-      </p>
-        <p>
-          <input name="submit" value="Fusionner les playlists" type='submit'/>
-        </p>
-      </form>
-
+    <div id=content>
+    <div class='forms'>
+        <form name="fusion_form" action="" method="POST">
+            {{ form.csrf_token  }}
+            <p>
+              <h2> Code de la playlist de destination : </h2>
+            </p>
+            <p>
+            {{form.playlist_code}}
+          </p>
+            <p>
+              <input name="submit" value="Fusionner les playlists" type='submit'/>
+            </p>
+          </form>
+      </div>
+</div>
 {%endblock%}

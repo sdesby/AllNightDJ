@@ -88,6 +88,10 @@ a {
     height: 800px;
     margin-top: 15px;
 }
+
+.forms{
+  padding: 10px;
+}
 /*------ Error Divs --------*/
 
 .error {
